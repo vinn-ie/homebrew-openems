@@ -36,5 +36,5 @@ env/
 # Homebrew
 *.bottle.tar.gz
 *.bottle/
-*.bottles/
+*bottles/
 logs/
