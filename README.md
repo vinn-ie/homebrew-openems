@@ -7,7 +7,7 @@ openEMS is a free electromagnetic field solver using the EC-FDTD method for ante
 ## Installation
 
 ```bash
-brew tap vincentfree/openems
+brew tap vinn-ie/openems
 brew install openems
 ```
 

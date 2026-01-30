@@ -10,6 +10,13 @@ class Csxcad < Formula
       revision: "d7d70ef7ea9ab91fcfd3ed2ab1b3a5a0d03b7fbe"
   version "0.6.4"
   license "LGPL-3.0-or-later"
+
+  bottle do
+    root_url "https://github.com/vinn-ie/homebrew-openems/releases/download/v1.0"
+    rebuild 1
+    sha256 cellar: :any, arm64_sequoia: "7c672bfff16fc2effef566c5a2e3c1714efa00aa41df5bb3be19b7409af034ce"
+  end
+
   head "https://github.com/thliebig/CSXCAD.git", branch: "master"
 
   depends_on "cmake" => :build

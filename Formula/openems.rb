@@ -10,6 +10,13 @@ class Openems < Formula
       revision: "f99c95d0c96de393b2f6c1d6d7c4dc2ab62ab3b9"
   version "0.0.37"
   license "GPL-3.0-or-later"
+
+  bottle do
+    root_url "https://github.com/vinn-ie/homebrew-openems/releases/download/v1.0"
+    rebuild 1
+    sha256 cellar: :any, arm64_sequoia: "d60becadc5f66400dedc37b224d173f0afa44312794ef3e93ed9cd7dd902fe18"
+  end
+
   head "https://github.com/thliebig/openEMS.git", branch: "master"
 
   option "without-gui", "Build without GUI components (AppCSXCAD)"

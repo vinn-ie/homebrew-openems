@@ -8,6 +8,13 @@ class Qcsxcad < Formula
   url "https://github.com/thliebig/QCSXCAD.git", branch: "master"
   version "0.6.4"
   license "LGPL-3.0-or-later"
+
+  bottle do
+    root_url "https://github.com/vinn-ie/homebrew-openems/releases/download/v1.0"
+    rebuild 1
+    sha256 cellar: :any, arm64_sequoia: "4253d60b3e821412156d58e7f21d200aabcad5d35ae7546b35979fbe7691bc21"
+  end
+
   head "https://github.com/thliebig/QCSXCAD.git", branch: "master"
 
   depends_on "cmake" => :build
