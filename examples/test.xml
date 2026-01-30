@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openEMS>
+  <FDTD NumberOfTimesteps="100" endCriteria="1e-6">
+    <Excitation Type="0" f0="1e9" fc="0.5e9"/>
+    <BoundaryCond xmin="PEC" xmax="PEC" ymin="PEC" ymax="PEC" zmin="PEC" zmax="PEC"/>
+  </FDTD>
+  <ContinuousStructure>
+    <BackgroundMaterial Epsilon="1" Mue="1"/>
+    <RectilinearGrid DeltaUnit="1e-3">
+      <XLines>0,10,20,30,40,50</XLines>
+      <YLines>0,10,20,30,40,50</YLines>
+      <ZLines>0,10,20,30,40,50</ZLines>
+    </RectilinearGrid>
+  </ContinuousStructure>
+</openEMS>
