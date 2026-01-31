@@ -572,28 +572,41 @@ jobs:
           # For each formula, combine its JSON files into one array JSON and
           # run `brew bottle --merge` once. This prevents per-file sequential
           # overwrites and ensures all platform entries are merged together.
-          find "$ORIG_DIR/bottle-json" -type f -name '*.json' -print0 | \
-            xargs -0 -n1 basename | sed -E 's/(.+)--.+\.arm64_.+\.bottle\.json/\1/' | sort -u | while read -r formula; do
+          for formula in $(find "$ORIG_DIR/bottle-json" -type f -name '*.json' -print0 | xargs -0 -n1 basename | sed -E 's/(.+)--.+\.arm64_.+\.bottle\.json/\1/' | sort -u); do
             echo "=== Merging JSONs for formula: $formula ==="
             tmp_combined="/tmp/${formula}-combined.json"
-            python3 - <<PY > "$tmp_combined"
-import sys, json, glob, os
-orig = os.environ['ORIG_DIR']
-pattern = os.path.join(orig, 'bottle-json', f'{formula}--*.json')
-files = sorted(glob.glob(pattern))
-combined = []
-for f in files:
-    try:
-        data = json.load(open(f))
-        if isinstance(data, list):
-            combined.extend(data)
-        else:
-            combined.append(data)
-    except Exception as e:
-        print(f'Failed to load {f}: {e}', file=sys.stderr)
-        sys.exit(2)
-json.dump(combined, sys.stdout)
-PY
+            # Gather matching files into an array; skip if none found
+            files=("$ORIG_DIR/bottle-json/${formula}--"*.json)
+            if [ ! -e "${files[0]}" ]; then
+              echo "No JSON files found for $formula"
+              continue
+            fi
+            # Use jq to concatenate arrays: each bottle json is an array, so 'jq -s add' merges them
+            if ! jq -s 'add' "${files[@]}" > "$tmp_combined" 2>/dev/null; then
+              echo "jq failed to combine JSONs for $formula; attempting python fallback"
+              # Fallback: combine arrays by stripping outer brackets and joining with commas
+              rm -f "$tmp_combined"
+              echo -n '[' > "$tmp_combined"
+              first=1
+              for ff in "${files[@]}"; do
+                if [ ! -s "$ff" ]; then
+                  continue
+                fi
+                # remove leading '[' and trailing ']' and surrounding whitespace
+                inner=$(sed -e '1s/^[[:space:]]*\[//' -e '$s/\][[:space:]]*$//' "$ff")
+                if [ -z "$inner" ]; then
+                  continue
+                fi
+                if [ "$first" -eq 1 ]; then
+                  echo -n "$inner" >> "$tmp_combined"
+                  first=0
+                else
+                  echo -n "," >> "$tmp_combined"
+                  echo -n "$inner" >> "$tmp_combined"
+                fi
+              done
+              echo ']' >> "$tmp_combined"
+            fi
             echo "Processing combined JSON: $tmp_combined"
             if [ ! -s "$tmp_combined" ]; then
               echo "No combined JSON for $formula (skipping)"
