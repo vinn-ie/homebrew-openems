@@ -11,6 +11,8 @@ on:
     paths:
       - 'Formula/**'
       - '.github/workflows/ci.yml'
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       formula:
