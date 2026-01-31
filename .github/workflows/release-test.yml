@@ -1,0 +1,17 @@
+name: Release Test
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  test-release-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release triggered
+        run: |
+          echo "✅ Release trigger is working!"
+          echo "Event: ${{ github.event_name }}"
+          echo "Release tag: ${{ github.event.release.tag_name }}"
+          echo "Release name: ${{ github.event.release.name }}"
+          echo "Target branch: ${{ github.event.release.target_commitish }}"
