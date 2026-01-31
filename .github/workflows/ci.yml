@@ -186,6 +186,9 @@ jobs:
   # Build bottles on release
   build-bottles:
     if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.build_bottles == 'true')
+    permissions:
+      contents: write
+      pull-requests: write
     strategy:
       fail-fast: false
       matrix:
