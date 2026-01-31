@@ -178,6 +178,12 @@ jobs:
             exit 1
           fi
 
+      - name: Cleanup
+        if: always()
+        run: |
+          echo "=== Cleaning up temporary files ==="
+          rm -f Simple_Patch_Antenna.py *.png *.h5
+
   # Build bottles on release
   build-bottles:
     if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.build_bottles == 'true')
@@ -199,6 +205,7 @@ jobs:
 
       - name: Build bottles
         run: |
+          echo "=== Setting up bottles directory ==="
           mkdir -p ./bottles
           
           for formula in fparser csxcad qcsxcad appcsxcad openems; do
@@ -207,12 +214,19 @@ jobs:
             echo "==========================================" 
             
             # Install with --build-bottle flag
-            brew install --build-bottle "vinn-ie/openems/$formula"
+            if ! brew install --build-bottle "vinn-ie/openems/$formula"; then
+              echo "❌ Failed to install $formula for bottling"
+              exit 1
+            fi
             
             # Create bottle - run from bottles directory
             echo "=== Creating bottle ==="
             cd ./bottles
-            brew bottle --json --root-url "https://github.com/vinn-ie/homebrew-openems/releases/download/${{ github.ref_name }}" "vinn-ie/openems/$formula"
+            if ! brew bottle --json --root-url "https://github.com/vinn-ie/homebrew-openems/releases/download/${{ github.ref_name }}" "vinn-ie/openems/$formula"; then
+              echo "❌ Failed to create bottle for $formula"
+              cd ..
+              exit 1
+            fi
             cd ..
             
             echo "=== Bottles directory after $formula ==="
@@ -260,6 +274,12 @@ jobs:
           path: ./bottles/*.json
           if-no-files-found: warn
 
+      - name: Cleanup bottles
+        if: always()
+        run: |
+          echo "=== Cleaning up bottle build artifacts ==="
+          rm -rf ./bottles
+
   # Test bottles after they're built
   test-bottles:
     needs: update-formulas
@@ -285,7 +305,13 @@ jobs:
       - name: Add tap
         run: |
           brew tap vinn-ie/openems
-          brew tap --list-formula vinn-ie/openems
+          # List formulas in the tap repository (avoid invalid brew option)
+          if repo_path=$(brew --repo vinn-ie/openems 2>/dev/null); then
+            echo "Listing Formula/ in $repo_path"
+            ls -la "$repo_path/Formula" || true
+          else
+            echo "Could not determine tap repo path"
+          fi
 
       - name: Verify bottle blocks exist in formulas
         run: |
@@ -307,8 +333,16 @@ jobs:
           for formula in fparser csxcad qcsxcad appcsxcad openems; do
             echo "--- Installing $formula ---"
             
-            # Get the version from the formula
-            formula_version=$(brew info --json=v2 "vinn-ie/openems/$formula" | jq -r '.formulae[0].versions.stable')
+            # Get the version from 'brew info' JSON (more robust)
+            formula_version=$(brew info --json=v2 "vinn-ie/openems/$formula" | python3 -c "import sys,json; j=json.load(sys.stdin); print(j['formulae'][0]['versions']['stable'])")
+            if [ -z "$formula_version" ] || [ "$formula_version" = "None" ]; then
+              echo "❌ Could not determine version for $formula via brew info; falling back to formula file"
+              formula_version=$(grep '^  version "' "Formula/${formula}.rb" | sed 's/.*version "\([^"]*\)".*/\1/')
+            fi
+            if [ -z "$formula_version" ]; then
+              echo "❌ Could not determine version for $formula"
+              exit 1
+            fi
             echo "Installing $formula@$formula_version"
             
             # Capture install output to check for bottle usage
@@ -380,6 +414,32 @@ jobs:
           path: ./bottle-json
           merge-multiple: true
 
+      - name: Verify bottle integrity
+        run: |
+          echo "=== Verifying bottle files ==="
+          cd ./bottles
+          
+          # Check that all bottles have corresponding JSON files
+          for bottle_file in *.bottle*.tar.gz; do
+            json_file="${bottle_file%.tar.gz}.json"
+            if [ ! -f "../bottle-json/$json_file" ]; then
+              echo "❌ Missing JSON file for bottle: $bottle_file"
+              exit 1
+            fi
+            echo "✅ Found JSON for $bottle_file"
+          done
+          
+          # Basic JSON validation
+          for json_file in ../bottle-json/*.json; do
+            if ! python3 -m json.tool "$json_file" > /dev/null 2>&1; then
+              echo "❌ Invalid JSON in $json_file"
+              exit 1
+            fi
+            echo "✅ Valid JSON: $(basename "$json_file")"
+          done
+          
+          echo "=== Bottle integrity check passed ==="
+
       - name: Upload bottles to release
         uses: softprops/action-gh-release@v2
         with:
@@ -420,21 +480,38 @@ jobs:
           echo "=== Merging bottle blocks into formulas ==="
           for json_file in ./bottle-json/*.json; do
             echo "Processing: $json_file"
-            brew bottle --merge "$json_file" --write
+            if ! brew bottle --merge "$json_file" --write; then
+              echo "❌ Failed to merge bottle info from $json_file"
+              exit 1
+            fi
           done
           
           echo "=== Updated formulas ==="
           git diff Formula/
 
-      - name: Commit and push updated formulas
+      - name: Commit and push updated formulas to branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
+          branch_name="bottle-updates/${{ github.ref_name }}"
+          git checkout -b "$branch_name"
+
           git add Formula/*.rb
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update bottle blocks for ${{ github.ref_name }}"
-            git push
+            git commit -m "Update bottle blocks for ${{ github.ref_name }} [skip ci]"
+            git push --set-upstream origin "$branch_name"
+            echo "Pushed branch $branch_name"
           fi
+
+      - name: Create pull request for bottle updates
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Update bottle blocks for ${{ github.ref_name }}"
+          body: "Automated bottle block updates for ${{ github.ref_name }}."
+          base: ${{ github.event.repository.default_branch }}
+          head: "bottle-updates/${{ github.ref_name }}"
+          draft: false
