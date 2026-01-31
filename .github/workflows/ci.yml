@@ -88,7 +88,6 @@ jobs:
       - name: Set up Homebrew
         run: |
           brew update
-          brew doctor || true
 
       - name: Tap local repo
         run: brew tap vinn-ie/openems file://$PWD
@@ -198,7 +197,6 @@ jobs:
       - name: Set up Homebrew
         run: |
           brew update
-          brew doctor || true
 
       - name: Tap local repo
         run: brew tap vinn-ie/openems file://$PWD
@@ -284,6 +282,9 @@ jobs:
   test-bottles:
     needs: update-formulas
     if: github.event_name == 'release'
+    permissions:
+      contents: write
+      pull-requests: write
     strategy:
       fail-fast: false
       matrix:
@@ -297,10 +298,25 @@ jobs:
       - name: Pull latest formula changes
         run: git pull origin ${{ github.event.repository.default_branch }}
 
+      - name: Checkout PR branch if present
+        id: check_branch
+        run: |
+          set -euo pipefail
+          branch="bottle-updates/${{ github.ref_name }}"
+          echo "Checking for remote branch $branch"
+          git fetch origin "$branch" || true
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+            echo "Found $branch on origin — checking out"
+            git fetch origin "$branch":"$branch"
+            git checkout "$branch"
+            echo "branch_found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "branch_found=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Homebrew
         run: |
           brew update
-          brew doctor || true
 
       - name: Add tap
         run: |
@@ -391,6 +407,31 @@ jobs:
 
           echo "=== Running Python test ==="
           python examples/test_python.py
+
+      - name: Merge bottle-updates PR into default branch (if tests passed and PR exists)
+        if: steps.check_branch.outputs.branch_found == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          BRANCH: "bottle-updates/${{ github.ref_name }}"
+        run: |
+          set -euo pipefail
+          echo "Looking for PR for branch $BRANCH"
+          prs=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$REPO/pulls?head=${OWNER}:${BRANCH}&state=open")
+          pr_number=$(curl -s "$prs" | python3 -c 'import sys,json; js=json.load(sys.stdin); print(js[0]["number"] if js else "")')
+          if [ -z "$pr_number" ]; then
+            echo "No open PR found for $BRANCH; nothing to merge"
+            exit 0
+          fi
+          echo "Merging PR #$pr_number"
+          resp=$(curl -s -X PUT -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$REPO/pulls/$pr_number/merge" -d '{"merge_method":"merge"}')
+          echo "$resp"
+          if echo "$resp" | python3 -c "import sys,json; j=json.load(sys.stdin); print(j.get('merged', False))" | grep -q True; then
+            echo "PR #$pr_number merged"
+          else
+            echo "Failed to merge PR #$pr_number or it was merged already"
+          fi
 
   # Upload bottles to release
   upload-release-bottles:
@@ -489,29 +530,25 @@ jobs:
           echo "=== Updated formulas ==="
           git diff Formula/
 
-      - name: Commit and push updated formulas to branch
+      - name: Commit updated formulas (no push)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          branch_name="bottle-updates/${{ github.ref_name }}"
-          git checkout -b "$branch_name"
-
-          git add Formula/*.rb
+          git add Formula/*.rb || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
             git commit -m "Update bottle blocks for ${{ github.ref_name }} [skip ci]"
-            git push --set-upstream origin "$branch_name"
-            echo "Pushed branch $branch_name"
           fi
 
-      - name: Create pull request for bottle updates
+      - name: Create or update pull request for bottle updates
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "Update bottle blocks for ${{ github.ref_name }}"
           body: "Automated bottle block updates for ${{ github.ref_name }}."
           base: ${{ github.event.repository.default_branch }}
-          head: "bottle-updates/${{ github.ref_name }}"
+          branch: "bottle-updates/${{ github.ref_name }}"
+          commit-message: "[create-pull-request] automated change"
           draft: false
