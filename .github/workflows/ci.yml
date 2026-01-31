@@ -91,7 +91,7 @@ jobs:
           brew doctor || true
 
       - name: Tap local repo
-        run: brew tap vincentfree/openems file://$PWD
+        run: brew tap vinn-ie/openems file://$PWD
 
       - name: Install fparser
         if: >
@@ -102,7 +102,7 @@ jobs:
           needs.detect-changes.outputs.openems == 'true' ||
           github.event.inputs.formula == '' ||
           github.event.inputs.formula == 'fparser'
-        run: brew install --build-from-source vincentfree/openems/fparser
+        run: brew install --build-from-source vinn-ie/openems/fparser
 
       - name: Install csxcad
         if: >
@@ -112,7 +112,7 @@ jobs:
           needs.detect-changes.outputs.openems == 'true' ||
           github.event.inputs.formula == '' ||
           github.event.inputs.formula == 'csxcad'
-        run: brew install --build-from-source vincentfree/openems/csxcad
+        run: brew install --build-from-source vinn-ie/openems/csxcad
 
       - name: Install qcsxcad
         if: >
@@ -121,7 +121,7 @@ jobs:
           needs.detect-changes.outputs.openems == 'true' ||
           github.event.inputs.formula == '' ||
           github.event.inputs.formula == 'qcsxcad'
-        run: brew install --build-from-source vincentfree/openems/qcsxcad
+        run: brew install --build-from-source vinn-ie/openems/qcsxcad
 
       - name: Install appcsxcad
         if: >
@@ -129,14 +129,14 @@ jobs:
           needs.detect-changes.outputs.openems == 'true' ||
           github.event.inputs.formula == '' ||
           github.event.inputs.formula == 'appcsxcad'
-        run: brew install --build-from-source vincentfree/openems/appcsxcad
+        run: brew install --build-from-source vinn-ie/openems/appcsxcad
 
       - name: Install openems
         if: >
           needs.detect-changes.outputs.openems == 'true' ||
           github.event.inputs.formula == '' ||
           github.event.inputs.formula == 'openems'
-        run: brew install --build-from-source vincentfree/openems/openems
+        run: brew install --build-from-source vinn-ie/openems/openems
 
       - name: Smoketest - openEMS CLI
         if: >
@@ -215,24 +215,24 @@ jobs:
           brew doctor || true
 
       - name: Tap local repo
-        run: brew tap vincentfree/openems file://$PWD
+        run: brew tap vinn-ie/openems file://$PWD
 
       - name: Build bottles
         run: |
           mkdir -p ./bottles
           
           for formula in fparser csxcad qcsxcad appcsxcad openems; do
-            echo "=========================================="
+            echo "==========================================" 
             echo "=== Building bottle for $formula ==="
-            echo "=========================================="
+            echo "==========================================" 
             
             # Install with --build-bottle flag
-            brew install --build-bottle "vincentfree/openems/$formula"
+            brew install --build-bottle "vinn-ie/openems/$formula"
             
             # Create bottle - run from bottles directory
             echo "=== Creating bottle ==="
             cd ./bottles
-            brew bottle --json --root-url "https://github.com/vincentfree/homebrew-openems/releases/download/${{ github.ref_name }}" "vincentfree/openems/$formula"
+            brew bottle --json --root-url "https://github.com/vinn-ie/homebrew-openems/releases/download/${{ github.ref_name }}" "vinn-ie/openems/$formula"
             cd ..
             
             echo "=== Bottles directory after $formula ==="
@@ -340,7 +340,7 @@ jobs:
           brew doctor || true
 
       - name: Tap local repo
-        run: brew tap vincentfree/openems file://$PWD
+        run: brew tap vinn-ie/openems file://$PWD
 
       - name: Determine OS tag
         id: os-tag
@@ -471,7 +471,7 @@ jobs:
       - name: Set up Homebrew
         run: |
           brew update
-          brew tap vincentfree/openems file://$PWD
+          brew tap vinn-ie/openems file://$PWD
 
       - name: Merge bottle info into formulas
         run: |
@@ -523,7 +523,7 @@ jobs:
           brew doctor || true
 
       - name: Tap local repo with updated formulas
-        run: brew tap vincentfree/openems file://$PWD
+        run: brew tap vinn-ie/openems file://$PWD
 
       - name: Verify bottle blocks exist in formulas
         run: |
@@ -546,7 +546,7 @@ jobs:
             echo "--- Installing $formula ---"
             
             # Capture install output to check for bottle usage
-            install_output=$(brew install "vincentfree/openems/$formula" 2>&1) || true
+            install_output=$(brew install "vinn-ie/openems/$formula" 2>&1) || true
             echo "$install_output"
             
             # Check if it was poured from bottle (not built from source)
@@ -555,7 +555,7 @@ jobs:
             elif echo "$install_output" | grep -q "already installed"; then
               echo "ℹ️  $formula was already installed"
               # Reinstall to verify bottle
-              reinstall_output=$(brew reinstall "vincentfree/openems/$formula" 2>&1) || true
+              reinstall_output=$(brew reinstall "vinn-ie/openems/$formula" 2>&1) || true
               echo "$reinstall_output"
               if echo "$reinstall_output" | grep -q "Pouring"; then
                 echo "✅ $formula reinstalled from bottle"

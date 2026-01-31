@@ -21,7 +21,7 @@ brew uninstall openems appcsxcad qcsxcad csxcad fparser 2>/dev/null || true
 
 # Tap from local path
 echo "=== Tapping from local path ==="
-brew tap vincentfree/openems "$TAP_PATH" 2>/dev/null || true
+brew tap vinn-ie/openems "$TAP_PATH" 2>/dev/null || true
 
 # Build bottles in dependency order
 FORMULAS="fparser csxcad qcsxcad appcsxcad openems"
@@ -29,8 +29,8 @@ FORMULAS="fparser csxcad qcsxcad appcsxcad openems"
 for formula in $FORMULAS; do
     echo ""
     echo "=== Building bottle for $formula ==="
-    brew install --build-bottle "vincentfree/openems/$formula"
-    brew bottle --json --root-url "https://github.com/vincentfree/homebrew-openems/releases/download/$VERSION" "vincentfree/openems/$formula"
+    brew install --build-bottle "vinn-ie/openems/$formula"
+    brew bottle --json --root-url "https://github.com/vinn-ie/homebrew-openems/releases/download/$VERSION" "vinn-ie/openems/$formula"
 done
 
 echo ""
@@ -40,7 +40,7 @@ ls -la *.bottle.tar.gz 2>/dev/null || echo "No bottles found"
 echo ""
 echo "Next steps:"
 echo "1. Create GitHub release '$VERSION' at:"
-echo "   https://github.com/vincentfree/homebrew-openems/releases/new"
+echo "   https://github.com/vinn-ie/homebrew-openems/releases/new"
 echo ""
 echo "2. Upload all .bottle.tar.gz files to that release"
 echo ""
@@ -48,7 +48,7 @@ echo "3. Add bottle blocks to each formula using the SHA256 from the .json files
 cat <<'EOF'
 
    bottle do
-     root_url "https://github.com/vincentfree/homebrew-openems/releases/download/v1.0"
+     root_url "https://github.com/vinn-ie/homebrew-openems/releases/download/v1.0"
      sha256 cellar: :any, arm64_sequoia: "SHA_FROM_JSON"
      sha256 cellar: :any, arm64_tahoe:   "SHA_FROM_JSON"
    end
