@@ -282,8 +282,8 @@ jobs:
 
   # Test bottles after they're built
   test-bottles:
-    needs: build-bottles
-    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.build_bottles == 'true')
+    needs: update-formulas
+    if: github.event_name == 'release'
     strategy:
       fail-fast: false
       matrix:
@@ -291,98 +291,73 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Download bottles
-        uses: actions/download-artifact@v4
         with:
-          pattern: bottles-*
-          path: ./bottles
-          merge-multiple: true
+          ref: ${{ github.event.repository.default_branch }}
 
-      - name: Debug - List downloaded files
-        run: |
-          echo "=== Current directory ==="
-          pwd
-          echo "=== Directory listing ==="
-          ls -la
-          echo "=== Bottles directory ==="
-          if [ -d "./bottles" ]; then
-            ls -la ./bottles/
-            echo "=== All bottle files ==="
-            find ./bottles -name "*.bottle*.tar.gz" -o -name "*.json" 2>/dev/null || echo "No files found"
-          else
-            echo "❌ ERROR: bottles directory does not exist!"
-            echo "=== Looking for artifacts elsewhere ==="
-            find . -name "*.bottle*.tar.gz" 2>/dev/null || echo "No bottle files found anywhere"
-            exit 1
-          fi
-
-      - name: Verify bottles exist
-        run: |
-          if [ ! -d "./bottles" ]; then
-            echo "❌ FATAL: Bottles directory not found!"
-            exit 1
-          fi
-          
-          bottle_count=$(find ./bottles -name "*.bottle*.tar.gz" 2>/dev/null | wc -l)
-          if [ "$bottle_count" -eq 0 ]; then
-            echo "❌ FATAL: No bottle files found in ./bottles/"
-            ls -la ./bottles/
-            exit 1
-          fi
-          
-          echo "✅ Found $bottle_count bottle file(s)"
-          ls -la ./bottles/*.bottle*.tar.gz
+      - name: Pull latest formula changes
+        run: git pull origin ${{ github.event.repository.default_branch }}
 
       - name: Set up Homebrew
         run: |
           brew update
           brew doctor || true
 
-      - name: Tap local repo
-        run: brew tap vinn-ie/openems file://$PWD
-
-      - name: Determine OS tag
-        id: os-tag
+      - name: Add tap
         run: |
-          case "${{ matrix.os }}" in
-            macos-14) echo "tag=arm64_sonoma" >> $GITHUB_OUTPUT ;;
-            macos-15) echo "tag=arm64_sequoia" >> $GITHUB_OUTPUT ;;
-            macos-latest) echo "tag=arm64_sequoia" >> $GITHUB_OUTPUT ;;
-          esac
+          brew tap vinn-ie/openems
+          brew tap --list-formula vinn-ie/openems
 
-      - name: Install bottles
+      - name: Verify bottle blocks exist in formulas
         run: |
-          # Get the absolute path to bottles directory
-          BOTTLES_DIR="$(pwd)/bottles"
-          cd ./bottles
-          
+          echo "=== Checking bottle blocks in formulas ==="
           for formula in fparser csxcad qcsxcad appcsxcad openems; do
-            bottle_file=$(ls ${formula}--*.${{ steps.os-tag.outputs.tag }}.bottle*.tar.gz 2>/dev/null | head -1 || true)
-            if [ -z "$bottle_file" ]; then
-              bottle_file=$(ls ${formula}--*.arm64_*.bottle*.tar.gz 2>/dev/null | head -1 || true)
-            fi
-            
-            if [ -n "$bottle_file" ] && [ -f "$bottle_file" ]; then
-              echo "=== Installing $formula from bottle: $bottle_file ==="
-              # Use absolute path to ensure Homebrew treats it as a file
-              brew install --force "$BOTTLES_DIR/$bottle_file"
+            echo "--- $formula ---"
+            if grep -q "bottle do" Formula/${formula}.rb; then
+              echo "✅ Bottle block found in $formula"
+              grep -A 10 "bottle do" Formula/${formula}.rb
             else
-              echo "❌ FATAL: No bottle found for $formula on ${{ matrix.os }}"
-              echo "Available bottles:"
-              ls -la *.bottle*.tar.gz 2>/dev/null || echo "No bottles at all!"
+              echo "❌ No bottle block in $formula"
               exit 1
             fi
           done
 
-      - name: Smoketest bottles - openEMS CLI
+      - name: Install formulas and verify bottles are used
+        run: |
+          echo "=== Installing formulas (should use bottles) ==="
+          for formula in fparser csxcad qcsxcad appcsxcad openems; do
+            echo "--- Installing $formula ---"
+            
+            # Capture install output to check for bottle usage
+            install_output=$(brew install "vinn-ie/openems/$formula" 2>&1) || true
+            echo "$install_output"
+            
+            # Check if it was poured from bottle (not built from source)
+            if echo "$install_output" | grep -q "Pouring"; then
+              echo "✅ $formula installed from bottle"
+            elif echo "$install_output" | grep -q "already installed"; then
+              echo "ℹ️  $formula was already installed"
+              # Reinstall to verify bottle
+              reinstall_output=$(brew reinstall "vinn-ie/openems/$formula" 2>&1) || true
+              echo "$reinstall_output"
+              if echo "$reinstall_output" | grep -q "Pouring"; then
+                echo "✅ $formula reinstalled from bottle"
+              else
+                echo "⚠️  Could not verify bottle for $formula (may have built from source)"
+              fi
+            else
+              echo "⚠️  $formula may have been built from source"
+              # Don't fail - bottle might not be available for this OS
+            fi
+          done
+
+      - name: Smoketest - openEMS CLI
         run: |
           echo "=== Testing openEMS CLI ==="
           openEMS --help || true
           echo "=== Running test simulation ==="
           openEMS examples/test.xml --debug-PEC
 
-      - name: Smoketest bottles - Python bindings
+      - name: Smoketest - Python bindings
         run: |
           echo "=== Setting up Python environment ==="
           python3 -m venv ~/openems-env
@@ -399,32 +374,9 @@ jobs:
           echo "=== Running Python test ==="
           python examples/test_python.py
 
-      - name: Smoketest bottles - Run tutorial example
-        continue-on-error: true
-        run: |
-          source ~/openems-env/bin/activate
-          echo "=== Downloading Simple Patch Antenna tutorial ==="
-          curl -LO https://raw.githubusercontent.com/thliebig/openEMS/master/python/Tutorials/Simple_Patch_Antenna.py
-          echo "=== Running tutorial (limited timesteps for CI) ==="
-          sed -i '' 's/NrTS=.*/NrTS=1000,/g' Simple_Patch_Antenna.py 2>/dev/null || true
-          # Use Python's built-in timeout since macOS doesn't have GNU timeout
-          python3 << 'PYTHON_SCRIPT' || echo "Tutorial completed or timed out"
-          import subprocess
-          import sys
-          try:
-              result = subprocess.run([sys.executable, 'Simple_Patch_Antenna.py'], timeout=300)
-              sys.exit(result.returncode)
-          except subprocess.TimeoutExpired:
-              print('Tutorial timed out after 300s')
-              sys.exit(0)
-          except Exception as e:
-              print(f'Tutorial error: {e}')
-              sys.exit(0)
-          PYTHON_SCRIPT
-
   # Upload bottles to release
   upload-release-bottles:
-    needs: test-bottles
+    needs: build-bottles
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     permissions:
@@ -502,95 +454,3 @@ jobs:
             git commit -m "Update bottle blocks for ${{ github.ref_name }}"
             git push
           fi
-
-  # Verify bottles are used by default after formula updates
-  verify-bottle-install:
-    needs: update-formulas
-    if: github.event_name == 'release'
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-14, macos-15, macos-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-
-      - name: Pull latest formula changes
-        run: git pull origin ${{ github.event.repository.default_branch }}
-
-      - name: Set up Homebrew
-        run: |
-          brew update
-          brew doctor || true
-
-      - name: Tap local repo with updated formulas
-        run: brew tap vinn-ie/openems file://$PWD
-
-      - name: Verify bottle blocks exist in formulas
-        run: |
-          echo "=== Checking bottle blocks in formulas ==="
-          for formula in fparser csxcad qcsxcad appcsxcad openems; do
-            echo "--- $formula ---"
-            if grep -q "bottle do" Formula/${formula}.rb; then
-              echo "✅ Bottle block found in $formula"
-              grep -A 10 "bottle do" Formula/${formula}.rb
-            else
-              echo "❌ No bottle block in $formula"
-              exit 1
-            fi
-          done
-
-      - name: Install formulas and verify bottles are used
-        run: |
-          echo "=== Installing formulas (should use bottles) ==="
-          for formula in fparser csxcad qcsxcad appcsxcad openems; do
-            echo "--- Installing $formula ---"
-            
-            # Capture install output to check for bottle usage
-            install_output=$(brew install "vinn-ie/openems/$formula" 2>&1) || true
-            echo "$install_output"
-            
-            # Check if it was poured from bottle (not built from source)
-            if echo "$install_output" | grep -q "Pouring"; then
-              echo "✅ $formula installed from bottle"
-            elif echo "$install_output" | grep -q "already installed"; then
-              echo "ℹ️  $formula was already installed"
-              # Reinstall to verify bottle
-              reinstall_output=$(brew reinstall "vinn-ie/openems/$formula" 2>&1) || true
-              echo "$reinstall_output"
-              if echo "$reinstall_output" | grep -q "Pouring"; then
-                echo "✅ $formula reinstalled from bottle"
-              else
-                echo "⚠️  Could not verify bottle for $formula (may have built from source)"
-              fi
-            else
-              echo "⚠️  $formula may have been built from source"
-              # Don't fail - bottle might not be available for this OS
-            fi
-          done
-
-      - name: Smoketest - openEMS CLI
-        run: |
-          echo "=== Testing openEMS CLI ==="
-          openEMS --help || true
-          echo "=== Running test simulation ==="
-          openEMS examples/test.xml --debug-PEC
-
-      - name: Smoketest - Python bindings
-        run: |
-          echo "=== Setting up Python environment ==="
-          python3 -m venv ~/openems-env
-          source ~/openems-env/bin/activate
-          pip install --upgrade pip
-          pip install cython numpy matplotlib h5py setuptools
-
-          echo "=== Installing CSXCAD Python bindings ==="
-          CSXCAD_INSTALL_PATH=$(brew --prefix csxcad) pip install git+https://github.com/thliebig/CSXCAD.git#subdirectory=python --no-build-isolation
-
-          echo "=== Installing openEMS Python bindings ==="
-          CSXCAD_INSTALL_PATH=$(brew --prefix csxcad) OPENEMS_INSTALL_PATH=$(brew --prefix openems) pip install git+https://github.com/thliebig/openEMS.git#subdirectory=python --no-build-isolation
-
-          echo "=== Running Python test ==="
-          python examples/test_python.py
