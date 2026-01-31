@@ -228,10 +228,15 @@ jobs:
               cd ..
               exit 1
             fi
+
+            # Move generated artifacts into a subdirectory per OS to avoid filename collisions
+            mkdir -p ../bottles/${{ matrix.os }}
+            mv ./*.json ../bottles/${{ matrix.os }}/ 2>/dev/null || true
+            mv ./*.tar.gz ../bottles/${{ matrix.os }}/ 2>/dev/null || true
             cd ..
-            
+
             echo "=== Bottles directory after $formula ==="
-            ls -la ./bottles/
+            ls -la ./bottles/${{ matrix.os }} || true
           done
           
           echo "=========================================="
@@ -245,13 +250,12 @@ jobs:
 
       - name: Verify bottles were created
         run: |
-          cd ./bottles
-          # Match bottles with rebuild numbers: *.bottle.tar.gz OR *.bottle.N.tar.gz
-          bottle_count=$(ls -1 *.bottle*.tar.gz 2>/dev/null | wc -l)
+          # Search for bottle files across OS subdirectories
+          bottle_count=$(find ./bottles -type f -name "*.bottle*.tar.gz" | wc -l)
           if [ "$bottle_count" -eq 0 ]; then
             echo "❌ FATAL: No bottle tar.gz files were created!"
             echo "=== Current directory contents ==="
-            ls -la
+            ls -la ./bottles || true
             echo "=== Checking Homebrew cache ==="
             ls -la $(brew --cache) 2>/dev/null || echo "Cache not accessible"
             echo "=== Checking for bottles in Homebrew Cellar ==="
@@ -259,21 +263,21 @@ jobs:
             exit 1
           fi
           echo "✅ Found $bottle_count bottle file(s)"
-          ls -la *.bottle*.tar.gz
+          find ./bottles -type f -name "*.bottle*.tar.gz" -print -exec ls -lh {} \;
 
       - name: Upload bottles
         uses: actions/upload-artifact@v4
         with:
           name: bottles-${{ matrix.os }}
-          path: ./bottles/*.bottle*.tar.gz
+          path: ./bottles/${{ matrix.os }}/*.bottle*.tar.gz
           if-no-files-found: error
 
       - name: Upload bottle JSON
         uses: actions/upload-artifact@v4
         with:
           name: bottle-json-${{ matrix.os }}
-          path: ./bottles/*.json
-          if-no-files-found: warn
+          path: ./bottles/${{ matrix.os }}/*.json
+          if-no-files-found: error
 
       - name: Cleanup bottles
         if: always()
@@ -385,7 +389,7 @@ jobs:
               echo "⚠️  $formula may have been built from source"
               # Don't fail - bottle might not be available for this OS
             fi
-          done
+          done  
 
       - name: Smoketest - openEMS CLI
         run: |
@@ -414,21 +418,24 @@ jobs:
       - name: Merge bottle-updates PR into default branch (if tests passed and PR exists)
         if: steps.check_branch.outputs.branch_found == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use a personal access token if provided in repository secrets as
+          # PERSONAL_ACCESS_TOKEN. This is necessary when workflow runs originate
+          # from forks, because the default GITHUB_TOKEN has limited permissions.
+          GITHUB_API_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           OWNER: ${{ github.repository_owner }}
           BRANCH: "bottle-updates/${{ github.ref_name }}"
         run: |
           set -euo pipefail
           echo "Looking for PR for branch $BRANCH"
-          prs=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$REPO/pulls?head=${OWNER}:${BRANCH}&state=open")
-          pr_number=$(curl -s "$prs" | python3 -c 'import sys,json; js=json.load(sys.stdin); print(js[0]["number"] if js else "")')
+          prs=$(curl -s -H "Authorization: Bearer $GITHUB_API_TOKEN" "https://api.github.com/repos/$REPO/pulls?head=${OWNER}:${BRANCH}&state=open")
+          pr_number=$(echo "$prs" | python3 -c 'import sys,json; js=json.load(sys.stdin); print(js[0]["number"] if js else "")')
           if [ -z "$pr_number" ]; then
             echo "No open PR found for $BRANCH; nothing to merge"
             exit 0
           fi
           echo "Merging PR #$pr_number"
-          resp=$(curl -s -X PUT -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$REPO/pulls/$pr_number/merge" -d '{"merge_method":"merge"}')
+          resp=$(curl -s -X PUT -H "Authorization: Bearer $GITHUB_API_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$REPO/pulls/$pr_number/merge" -d '{"merge_method":"merge"}')
           echo "$resp"
           if echo "$resp" | python3 -c "import sys,json; j=json.load(sys.stdin); print(j.get('merged', False))" | grep -q True; then
             echo "PR #$pr_number merged"
@@ -457,6 +464,26 @@ jobs:
           pattern: bottle-json-*
           path: ./bottle-json
           merge-multiple: true
+
+      - name: Verify downloaded JSONs contain all platforms
+        run: |
+          echo "=== Available JSON files ==="
+          ls -la ./bottle-json || true
+
+          required_platforms=("arm64_sequoia" "arm64_sonoma" "arm64_tahoe")
+          missing=0
+          for platform in "${required_platforms[@]}"; do
+            if ! ls ./bottle-json/*${platform}*.json >/dev/null 2>&1; then
+              echo "❌ Missing JSON files for platform: $platform"
+              missing=1
+            else
+              echo "✅ Found JSON files for platform: $platform"
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "FATAL: Not all platform JSON artifacts are present. Aborting."
+            exit 1
+          fi
 
       - name: Verify bottle integrity
         run: |
@@ -494,10 +521,11 @@ jobs:
   # Update formulas with bottle blocks
   update-formulas:
     needs: upload-release-bottles
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.build_bottles == 'true')
     runs-on: macos-latest
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -538,6 +566,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Ensure any generated artifact directories (e.g. bottle-json/) are
+          # not staged accidentally.
+          git rm -r --cached --ignore-unmatch ./bottle-json || true
+
           git add Formula/*.rb || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
@@ -548,7 +580,10 @@ jobs:
       - name: Create or update pull request for bottle updates
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # Prefer a personal access token stored in secrets.PERSONAL_ACCESS_TOKEN.
+          # This is required for workflows triggered from forks where the
+          # default GITHUB_TOKEN can't create cross-repository PRs.
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
           title: "Update bottle blocks for ${{ github.ref_name }}"
           body: "Automated bottle block updates for ${{ github.ref_name }}."
           base: ${{ github.event.repository.default_branch }}

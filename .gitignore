@@ -37,4 +37,5 @@ env/
 *.bottle.tar.gz
 *.bottle/
 *bottles/
+bottle-json/
 logs/
