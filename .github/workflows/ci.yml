@@ -215,19 +215,58 @@ jobs:
       - name: Build bottles
         run: |
           mkdir -p ./bottles
-          cd ./bottles
+          
           for formula in fparser csxcad qcsxcad appcsxcad openems; do
+            echo "=========================================="
             echo "=== Building bottle for $formula ==="
+            echo "=========================================="
+            
+            # Install with --build-bottle flag
             brew install --build-bottle "vincentfree/openems/$formula"
+            
+            # Create bottle - run from bottles directory
+            echo "=== Creating bottle ==="
+            cd ./bottles
             brew bottle --json --root-url "https://github.com/vincentfree/homebrew-openems/releases/download/${{ github.ref_name }}" "vincentfree/openems/$formula"
+            cd ..
+            
+            echo "=== Bottles directory after $formula ==="
+            ls -la ./bottles/
           done
+          
+          echo "=========================================="
+          echo "=== Final bottles directory ==="
+          echo "=========================================="
+          ls -la ./bottles/
+          
+          echo "=== Counting files ==="
+          echo "tar.gz files: $(find ./bottles -name '*.tar.gz' | wc -l)"
+          echo "json files: $(find ./bottles -name '*.json' | wc -l)"
+
+      - name: Verify bottles were created
+        run: |
+          cd ./bottles
+          # Match bottles with rebuild numbers: *.bottle.tar.gz OR *.bottle.N.tar.gz
+          bottle_count=$(ls -1 *.bottle*.tar.gz 2>/dev/null | wc -l)
+          if [ "$bottle_count" -eq 0 ]; then
+            echo "❌ FATAL: No bottle tar.gz files were created!"
+            echo "=== Current directory contents ==="
+            ls -la
+            echo "=== Checking Homebrew cache ==="
+            ls -la $(brew --cache) 2>/dev/null || echo "Cache not accessible"
+            echo "=== Checking for bottles in Homebrew Cellar ==="
+            find $(brew --cellar) -name "*.bottle*" 2>/dev/null || echo "None found"
+            exit 1
+          fi
+          echo "✅ Found $bottle_count bottle file(s)"
+          ls -la *.bottle*.tar.gz
 
       - name: Upload bottles
         uses: actions/upload-artifact@v4
         with:
           name: bottles-${{ matrix.os }}
-          path: ./bottles/*.bottle.tar.gz
-          if-no-files-found: warn
+          path: ./bottles/*.bottle*.tar.gz
+          if-no-files-found: error
 
       - name: Upload bottle JSON
         uses: actions/upload-artifact@v4
@@ -265,12 +304,30 @@ jobs:
           if [ -d "./bottles" ]; then
             ls -la ./bottles/
             echo "=== All bottle files ==="
-            find ./bottles -name "*.bottle.tar.gz" -o -name "*.json" 2>/dev/null || echo "No files found"
+            find ./bottles -name "*.bottle*.tar.gz" -o -name "*.json" 2>/dev/null || echo "No files found"
           else
-            echo "bottles directory does not exist!"
+            echo "❌ ERROR: bottles directory does not exist!"
             echo "=== Looking for artifacts elsewhere ==="
-            find . -name "*.bottle.tar.gz" 2>/dev/null || echo "No bottle files found anywhere"
+            find . -name "*.bottle*.tar.gz" 2>/dev/null || echo "No bottle files found anywhere"
+            exit 1
           fi
+
+      - name: Verify bottles exist
+        run: |
+          if [ ! -d "./bottles" ]; then
+            echo "❌ FATAL: Bottles directory not found!"
+            exit 1
+          fi
+          
+          bottle_count=$(find ./bottles -name "*.bottle*.tar.gz" 2>/dev/null | wc -l)
+          if [ "$bottle_count" -eq 0 ]; then
+            echo "❌ FATAL: No bottle files found in ./bottles/"
+            ls -la ./bottles/
+            exit 1
+          fi
+          
+          echo "✅ Found $bottle_count bottle file(s)"
+          ls -la ./bottles/*.bottle*.tar.gz
 
       - name: Set up Homebrew
         run: |
@@ -291,27 +348,22 @@ jobs:
 
       - name: Install bottles
         run: |
-          # Ensure bottles directory exists
-          if [ ! -d "./bottles" ]; then
-            echo "❌ Bottles directory not found!"
-            echo "Creating empty directory and falling back to source builds..."
-            mkdir -p ./bottles
-          fi
-          
           cd ./bottles
           
           for formula in fparser csxcad qcsxcad appcsxcad openems; do
-            bottle_file=$(ls ${formula}--*.${{ steps.os-tag.outputs.tag }}.bottle.tar.gz 2>/dev/null | head -1 || true)
+            bottle_file=$(ls ${formula}--*.${{ steps.os-tag.outputs.tag }}.bottle*.tar.gz 2>/dev/null | head -1 || true)
             if [ -z "$bottle_file" ]; then
-              bottle_file=$(ls ${formula}--*.arm64_*.bottle.tar.gz 2>/dev/null | head -1 || true)
+              bottle_file=$(ls ${formula}--*.arm64_*.bottle*.tar.gz 2>/dev/null | head -1 || true)
             fi
             
             if [ -n "$bottle_file" ] && [ -f "$bottle_file" ]; then
               echo "=== Installing $formula from bottle: $bottle_file ==="
               brew install --force "$bottle_file"
             else
-              echo "=== No bottle found for $formula on ${{ matrix.os }}, building from source ==="
-              brew install --build-from-source "vincentfree/openems/$formula"
+              echo "❌ FATAL: No bottle found for $formula on ${{ matrix.os }}"
+              echo "Available bottles:"
+              ls -la *.bottle*.tar.gz 2>/dev/null || echo "No bottles at all!"
+              exit 1
             fi
           done
 
@@ -388,7 +440,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            ./bottles/*.bottle.tar.gz
+            ./bottles/*.bottle*.tar.gz
             ./bottle-json/*.json
 
   # Update formulas with bottle blocks
