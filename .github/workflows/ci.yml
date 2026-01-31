@@ -339,20 +339,26 @@ jobs:
       - name: Verify bottle blocks exist in formulas
         run: |
           echo "=== Checking bottle blocks in formulas ==="
+          # Map matrix OS to expected bottle platform and only check that one.
+          case "${{ matrix.os }}" in
+            macos-14) expected_platform="arm64_sequoia" ;;
+            macos-15) expected_platform="arm64_sonoma" ;;
+            macos-26) expected_platform="arm64_tahoe" ;;
+            *) expected_platform="arm64_sequoia" ;;
+          esac
+
+          echo "Expected platform for this job: $expected_platform"
           for formula in fparser csxcad qcsxcad appcsxcad openems; do
             echo "--- $formula ---"
-            if grep -q "bottle do" Formula/${formula}.rb; then
+            if grep -q "bottle do" "Formula/${formula}.rb"; then
               echo "✅ Bottle block found in $formula"
-              # Extract bottle block and check for all expected platforms
-              bottle_block=$(sed -n '/bottle do/,/end/p' Formula/${formula}.rb || true)
-              for platform in arm64_sequoia arm64_sonoma arm64_tahoe; do
-                if echo "$bottle_block" | grep -q "$platform"; then
-                  echo "  ✅ $platform entry present"
-                else
-                  echo "  ❌ Missing $platform entry in $formula"
-                  exit 1
-                fi
-              done
+              bottle_block=$(sed -n '/bottle do/,/end/p' "Formula/${formula}.rb" || true)
+              if echo "$bottle_block" | grep -q "$expected_platform"; then
+                echo "  ✅ $expected_platform entry present"
+              else
+                echo "  ❌ Missing $expected_platform entry in $formula"
+                exit 1
+              fi
               echo "$bottle_block"
             else
               echo "❌ No bottle block in $formula"
@@ -559,13 +565,43 @@ jobs:
           rsync -a --exclude='.git' "$ORIG_DIR/" "$TMPDIR/"
           cd "$TMPDIR"
 
-          # Find all JSONs under the downloaded bottle-json directory (which
-          # may contain per-OS subdirectories) and merge them into the
-          # temp repo without creating commits.
-          find "$ORIG_DIR/bottle-json" -type f -name '*.json' -print0 | while IFS= read -r -d '' json_file; do
-            echo "Processing in temp repo: $json_file"
-            if ! brew bottle --merge "$json_file" --write; then
-              echo "❌ Failed to merge bottle info from $json_file"
+          # Ensure the temp repo is a tap for brew to operate on
+          brew tap --force-auto-update --repair || true
+          brew tap vinn-ie/openems file://$PWD || true
+
+          # For each formula, combine its JSON files into one array JSON and
+          # run `brew bottle --merge` once. This prevents per-file sequential
+          # overwrites and ensures all platform entries are merged together.
+          find "$ORIG_DIR/bottle-json" -type f -name '*.json' -print0 | \
+            xargs -0 -n1 basename | sed -E 's/(.+)--.+\.arm64_.+\.bottle\.json/\1/' | sort -u | while read -r formula; do
+            echo "=== Merging JSONs for formula: $formula ==="
+            tmp_combined="/tmp/${formula}-combined.json"
+            python3 - <<PY > "$tmp_combined"
+import sys, json, glob, os
+orig = os.environ['ORIG_DIR']
+pattern = os.path.join(orig, 'bottle-json', f'{formula}--*.json')
+files = sorted(glob.glob(pattern))
+combined = []
+for f in files:
+    try:
+        data = json.load(open(f))
+        if isinstance(data, list):
+            combined.extend(data)
+        else:
+            combined.append(data)
+    except Exception as e:
+        print(f'Failed to load {f}: {e}', file=sys.stderr)
+        sys.exit(2)
+json.dump(combined, sys.stdout)
+PY
+            echo "Processing combined JSON: $tmp_combined"
+            if [ ! -s "$tmp_combined" ]; then
+              echo "No combined JSON for $formula (skipping)"
+              continue
+            fi
+            if ! brew bottle --merge "$tmp_combined" --write; then
+              echo "❌ Failed to merge combined bottle info for $formula"
+              cat "$tmp_combined" || true
               exit 1
             fi
           done
@@ -591,6 +627,21 @@ jobs:
           git add Formula/*.rb || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
+            echo "=== Debug: current Formula checksums ==="
+            for f in Formula/*.rb; do
+              if command -v shasum >/dev/null 2>&1; then
+                shasum -a 256 "$f" || true
+              else
+                openssl dgst -sha256 "$f" || true
+              fi
+            done
+            echo "=== Debug: show Formula files (first 200 lines each) ==="
+            for f in Formula/*.rb; do
+              echo "--- $f ---"
+              sed -n '1,200p' "$f" || true
+            done
+            # Create a debug archive for upload in the next step
+            tar -czf "$GITHUB_WORKSPACE/formula-debug.tar.gz" Formula || true
           else
             git commit -m "Update bottle blocks for ${{ github.ref_name }} [skip ci]"
           fi
@@ -608,3 +659,10 @@ jobs:
           branch: "bottle-updates/${{ github.ref_name }}"
           commit-message: "[create-pull-request] automated change"
           draft: false
+
+      - name: Upload debug formulas (if present)
+        uses: actions/upload-artifact@v4
+        with:
+          name: formula-debug
+          path: ./formula-debug.tar.gz
+          if-no-files-found: ignore
