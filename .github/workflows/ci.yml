@@ -80,7 +80,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, macos-15, macos-latest]
+        os: [macos-14, macos-15, macos-26]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -138,18 +138,7 @@ jobs:
           github.event.inputs.formula == 'openems'
         run: brew install --build-from-source vinn-ie/openems/openems
 
-      - name: Smoketest - openEMS CLI
-        if: >
-          needs.detect-changes.outputs.openems == 'true' ||
-          github.event.inputs.formula == '' ||
-          github.event.inputs.formula == 'openems'
-        run: |
-          echo "=== Testing openEMS CLI ==="
-          openEMS --help || true
-          echo "=== Running test simulation ==="
-          openEMS examples/test.xml --debug-PEC
-
-      - name: Smoketest - Python bindings
+      - name: Set up Python environment
         if: >
           needs.detect-changes.outputs.openems == 'true' ||
           github.event.inputs.formula == '' ||
@@ -167,36 +156,27 @@ jobs:
           echo "=== Installing openEMS Python bindings ==="
           CSXCAD_INSTALL_PATH=$(brew --prefix csxcad) OPENEMS_INSTALL_PATH=$(brew --prefix openems) pip install git+https://github.com/thliebig/openEMS.git#subdirectory=python --no-build-isolation
 
-          echo "=== Running Python test ==="
-          python examples/test_python.py
-
-      - name: Smoketest - Run tutorial example
+      - name: Run Simple Patch Antenna tutorial
         if: >
           needs.detect-changes.outputs.openems == 'true' ||
           github.event.inputs.formula == '' ||
           github.event.inputs.formula == 'openems'
-        continue-on-error: true
         run: |
           source ~/openems-env/bin/activate
           echo "=== Downloading Simple Patch Antenna tutorial ==="
           curl -LO https://raw.githubusercontent.com/thliebig/openEMS/master/python/Tutorials/Simple_Patch_Antenna.py
-          echo "=== Running tutorial (limited timesteps for CI) ==="
-          # Modify to run fewer timesteps for faster CI
-          sed -i '' 's/NrTS=.*/NrTS=1000,/g' Simple_Patch_Antenna.py 2>/dev/null || true
-          # Use Python's built-in timeout since macOS doesn't have GNU timeout
-          python3 << 'PYTHON_SCRIPT' || echo "Tutorial completed or timed out"
-          import subprocess
-          import sys
-          try:
-              result = subprocess.run([sys.executable, 'Simple_Patch_Antenna.py'], timeout=300)
-              sys.exit(result.returncode)
-          except subprocess.TimeoutExpired:
-              print('Tutorial timed out after 300s')
-              sys.exit(0)
-          except Exception as e:
-              print(f'Tutorial error: {e}')
-              sys.exit(0)
-          PYTHON_SCRIPT
+          
+          echo "=== Running tutorial to completion ==="
+          python Simple_Patch_Antenna.py
+          
+          echo "=== Verifying plot files were generated ==="
+          if ls -1 *.png 2>/dev/null | grep -q .; then
+            echo "✅ Plot files generated:"
+            ls -lh *.png
+          else
+            echo "❌ No plot files found!"
+            exit 1
+          fi
 
   # Build bottles on release
   build-bottles:
@@ -204,7 +184,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, macos-15, macos-latest]
+        os: [macos-14, macos-15, macos-26]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -287,7 +267,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, macos-15, macos-latest]
+        os: [macos-14, macos-15, macos-26]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -327,8 +307,12 @@ jobs:
           for formula in fparser csxcad qcsxcad appcsxcad openems; do
             echo "--- Installing $formula ---"
             
+            # Get the version from the formula
+            formula_version=$(brew info --json=v2 "vinn-ie/openems/$formula" | jq -r '.formulae[0].versions.stable')
+            echo "Installing $formula@$formula_version"
+            
             # Capture install output to check for bottle usage
-            install_output=$(brew install "vinn-ie/openems/$formula" 2>&1) || true
+            install_output=$(brew install "vinn-ie/openems/$formula@$formula_version" 2>&1) || true
             echo "$install_output"
             
             # Check if it was poured from bottle (not built from source)
@@ -337,7 +321,7 @@ jobs:
             elif echo "$install_output" | grep -q "already installed"; then
               echo "ℹ️  $formula was already installed"
               # Reinstall to verify bottle
-              reinstall_output=$(brew reinstall "vinn-ie/openems/$formula" 2>&1) || true
+              reinstall_output=$(brew reinstall "vinn-ie/openems/$formula@$formula_version" 2>&1) || true
               echo "$reinstall_output"
               if echo "$reinstall_output" | grep -q "Pouring"; then
                 echo "✅ $formula reinstalled from bottle"
@@ -436,7 +420,7 @@ jobs:
           echo "=== Merging bottle blocks into formulas ==="
           for json_file in ./bottle-json/*.json; do
             echo "Processing: $json_file"
-            brew bottle --merge "$json_file" --write --no-commit
+            brew bottle --merge "$json_file" --write
           done
           
           echo "=== Updated formulas ==="
