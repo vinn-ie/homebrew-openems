@@ -353,6 +353,8 @@ jobs:
 
       - name: Install bottles
         run: |
+          # Get the absolute path to bottles directory
+          BOTTLES_DIR="$(pwd)/bottles"
           cd ./bottles
           
           for formula in fparser csxcad qcsxcad appcsxcad openems; do
@@ -363,7 +365,8 @@ jobs:
             
             if [ -n "$bottle_file" ] && [ -f "$bottle_file" ]; then
               echo "=== Installing $formula from bottle: $bottle_file ==="
-              brew install --force "./$bottle_file"
+              # Use absolute path to ensure Homebrew treats it as a file
+              brew install --force "$BOTTLES_DIR/$bottle_file"
             else
               echo "❌ FATAL: No bottle found for $formula on ${{ matrix.os }}"
               echo "Available bottles:"
