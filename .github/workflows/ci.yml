@@ -179,19 +179,19 @@ jobs:
           # Modify to run fewer timesteps for faster CI
           sed -i '' 's/NrTS=.*/NrTS=1000,/g' Simple_Patch_Antenna.py 2>/dev/null || true
           # Use Python's built-in timeout since macOS doesn't have GNU timeout
-          python3 -c "
-import subprocess
-import sys
-try:
-    result = subprocess.run([sys.executable, 'Simple_Patch_Antenna.py'], timeout=300)
-    sys.exit(result.returncode)
-except subprocess.TimeoutExpired:
-    print('Tutorial timed out after 300s')
-    sys.exit(0)
-except Exception as e:
-    print(f'Tutorial error: {e}')
-    sys.exit(0)
-" || echo "Tutorial completed or timed out"
+          python3 << 'PYTHON_SCRIPT' || echo "Tutorial completed or timed out"
+          import subprocess
+          import sys
+          try:
+              result = subprocess.run([sys.executable, 'Simple_Patch_Antenna.py'], timeout=300)
+              sys.exit(result.returncode)
+          except subprocess.TimeoutExpired:
+              print('Tutorial timed out after 300s')
+              sys.exit(0)
+          except Exception as e:
+              print(f'Tutorial error: {e}')
+              sys.exit(0)
+          PYTHON_SCRIPT
 
   # Build bottles on release
   build-bottles:
@@ -348,19 +348,19 @@ except Exception as e:
           echo "=== Running tutorial (limited timesteps for CI) ==="
           sed -i '' 's/NrTS=.*/NrTS=1000,/g' Simple_Patch_Antenna.py 2>/dev/null || true
           # Use Python's built-in timeout since macOS doesn't have GNU timeout
-          python3 -c "
-import subprocess
-import sys
-try:
-    result = subprocess.run([sys.executable, 'Simple_Patch_Antenna.py'], timeout=300)
-    sys.exit(result.returncode)
-except subprocess.TimeoutExpired:
-    print('Tutorial timed out after 300s')
-    sys.exit(0)
-except Exception as e:
-    print(f'Tutorial error: {e}')
-    sys.exit(0)
-" || echo "Tutorial completed or timed out"
+          python3 << 'PYTHON_SCRIPT' || echo "Tutorial completed or timed out"
+          import subprocess
+          import sys
+          try:
+              result = subprocess.run([sys.executable, 'Simple_Patch_Antenna.py'], timeout=300)
+              sys.exit(result.returncode)
+          except subprocess.TimeoutExpired:
+              print('Tutorial timed out after 300s')
+              sys.exit(0)
+          except Exception as e:
+              print(f'Tutorial error: {e}')
+              sys.exit(0)
+          PYTHON_SCRIPT
 
   # Upload bottles to release
   upload-release-bottles:
