@@ -73,7 +73,10 @@ jobs:
   # Build and test on all macOS versions
   test-build:
     needs: detect-changes
-    if: (needs.detect-changes.outputs.any_changed == 'true' || needs.detect-changes.outputs.workflow_changed == 'true' || github.event_name == 'workflow_dispatch') && github.event.inputs.build_bottles != 'true'
+    if: |
+      github.event_name != 'release' && 
+      (needs.detect-changes.outputs.any_changed == 'true' || needs.detect-changes.outputs.workflow_changed == 'true' || github.event_name == 'workflow_dispatch') && 
+      (github.event_name != 'workflow_dispatch' || github.event.inputs.build_bottles != 'true')
     strategy:
       fail-fast: false
       matrix:
@@ -197,7 +200,7 @@ jobs:
 
   # Build bottles on release
   build-bottles:
-    if: github.event_name == 'release' || github.event.inputs.build_bottles == 'true'
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.build_bottles == 'true')
     strategy:
       fail-fast: false
       matrix:
@@ -280,7 +283,7 @@ jobs:
   # Test bottles after they're built
   test-bottles:
     needs: build-bottles
-    if: github.event_name == 'release' || github.event.inputs.build_bottles == 'true'
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.build_bottles == 'true')
     strategy:
       fail-fast: false
       matrix:
