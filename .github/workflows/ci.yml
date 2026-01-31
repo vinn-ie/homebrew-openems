@@ -363,7 +363,7 @@ jobs:
             
             if [ -n "$bottle_file" ] && [ -f "$bottle_file" ]; then
               echo "=== Installing $formula from bottle: $bottle_file ==="
-              brew install --force "$bottle_file"
+              brew install --force "./$bottle_file"
             else
               echo "❌ FATAL: No bottle found for $formula on ${{ matrix.os }}"
               echo "Available bottles:"
