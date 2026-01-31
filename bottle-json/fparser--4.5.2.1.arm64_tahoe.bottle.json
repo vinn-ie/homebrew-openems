@@ -1,0 +1,55 @@
+{
+  "vinn-ie/openems/fparser": {
+    "formula": {
+      "name": "fparser",
+      "pkg_version": "4.5.2.1",
+      "path": "Library/Taps/vinn-ie/homebrew-openems/Formula/fparser.rb",
+      "tap_git_path": "Formula/fparser.rb",
+      "tap_git_revision": "df93fecac9d1d475973c9ee7dad8079a72c5a34b",
+      "tap_git_remote": "file:///Users/runner/work/homebrew-openems/homebrew-openems",
+      "desc": "Function parser library for mathematical expressions in C++",
+      "license": "LGPL-3.0-or-later",
+      "homepage": "https://github.com/thliebig/fparser"
+    },
+    "bottle": {
+      "root_url": "https://github.com/vinn-ie/homebrew-openems/releases/download/v0.0.9-test",
+      "cellar": "any",
+      "rebuild": 0,
+      "date": "2026-01-31T12:59:18Z",
+      "tags": {
+        "arm64_tahoe": {
+          "filename": "fparser-4.5.2.1.arm64_tahoe.bottle.tar.gz",
+          "local_filename": "fparser--4.5.2.1.arm64_tahoe.bottle.tar.gz",
+          "sha256": "c1afcbebfed985223d0dda9207fdcc3705ec61ee5205c3b8c793fa152ca46642",
+          "tab": {
+            "homebrew_version": "5.0.12",
+            "changed_files": [],
+            "source_modified_time": 1768334423,
+            "compiler": "clang",
+            "runtime_dependencies": [],
+            "arch": "arm64",
+            "built_on": {
+              "os": "Macintosh",
+              "os_version": "macOS 26",
+              "cpu_family": "dunno",
+              "xcode": "26.2",
+              "clt": "26.2.0.0.1.1764812424",
+              "preferred_perl": "5.34"
+            }
+          },
+          "path_exec_files": [],
+          "all_files": [
+            ".brew/fparser.rb",
+            "INSTALL_RECEIPT.json",
+            "include/fparser.hh",
+            "lib/libfparser.4.5.1.dylib",
+            "lib/libfparser.4.dylib",
+            "lib/libfparser.dylib",
+            "sbom.spdx.json"
+          ],
+          "installed_size": 338685
+        }
+      }
+    }
+  }
+}

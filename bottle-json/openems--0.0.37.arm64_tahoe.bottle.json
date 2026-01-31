@@ -1,0 +1,1125 @@
+{
+  "vinn-ie/openems/openems": {
+    "formula": {
+      "name": "openems",
+      "pkg_version": "0.0.37",
+      "path": "Library/Taps/vinn-ie/homebrew-openems/Formula/openems.rb",
+      "tap_git_path": "Formula/openems.rb",
+      "tap_git_revision": "df93fecac9d1d475973c9ee7dad8079a72c5a34b",
+      "tap_git_remote": "file:///Users/runner/work/homebrew-openems/homebrew-openems",
+      "desc": "Free and open electromagnetic field solver using EC-FDTD method",
+      "license": "GPL-3.0-or-later",
+      "homepage": "https://openems.de"
+    },
+    "bottle": {
+      "root_url": "https://github.com/vinn-ie/homebrew-openems/releases/download/v0.0.9-test",
+      "cellar": "any",
+      "rebuild": 0,
+      "date": "2026-01-31T13:04:53Z",
+      "tags": {
+        "arm64_tahoe": {
+          "filename": "openems-0.0.37.arm64_tahoe.bottle.tar.gz",
+          "local_filename": "openems--0.0.37.arm64_tahoe.bottle.tar.gz",
+          "sha256": "d1c6576615412ed8a363c790071bc002d4f4d41dd3fefc37e4bd8d5c34f7a4c2",
+          "tab": {
+            "homebrew_version": "5.0.12",
+            "changed_files": [],
+            "source_modified_time": 1769104014,
+            "compiler": "clang",
+            "runtime_dependencies": [
+              {
+                "full_name": "icu4c@78",
+                "version": "78.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "78.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "xz",
+                "version": "5.8.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "5.8.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "lz4",
+                "version": "1.10.0",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "1.10.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "zstd",
+                "version": "1.5.7",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "1.5.7",
+                "declared_directly": false
+              },
+              {
+                "full_name": "boost",
+                "version": "1.90.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.90.0",
+                "declared_directly": true
+              },
+              {
+                "full_name": "eigen",
+                "version": "5.0.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "5.0.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "gmp",
+                "version": "6.3.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.3.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "mpfr",
+                "version": "4.2.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.2.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "cgal",
+                "version": "6.1.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.1.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "vinn-ie/openems/fparser",
+                "version": "4.5.2.1",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "4.5.2.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "isl",
+                "version": "0.27",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "0.27",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libmpc",
+                "version": "1.3.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.3.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "gcc",
+                "version": "15.2.0",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "15.2.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libaec",
+                "version": "1.1.5",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.1.5",
+                "declared_directly": false
+              },
+              {
+                "full_name": "pkgconf",
+                "version": "2.5.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.5.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "hdf5",
+                "version": "2.0.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.0.0",
+                "declared_directly": true
+              },
+              {
+                "full_name": "cgns",
+                "version": "4.5.1",
+                "revision": 1,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.5.1_1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "double-conversion",
+                "version": "3.4.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "3.4.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libpng",
+                "version": "1.6.54",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.6.54",
+                "declared_directly": false
+              },
+              {
+                "full_name": "freetype",
+                "version": "2.14.1",
+                "revision": 1,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.14.1_1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libunistring",
+                "version": "1.4.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.4.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "gettext",
+                "version": "1.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "fontconfig",
+                "version": "2.17.1",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "2.17.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "jpeg-turbo",
+                "version": "3.1.3",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "3.1.3",
+                "declared_directly": false
+              },
+              {
+                "full_name": "jsoncpp",
+                "version": "1.9.6",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.9.6",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libharu",
+                "version": "2.4.5",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.4.5",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libogg",
+                "version": "1.3.6",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.3.6",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libtiff",
+                "version": "4.7.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.7.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "netcdf",
+                "version": "4.9.3",
+                "revision": 2,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.9.3_2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "nlohmann-json",
+                "version": "3.12.0",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "3.12.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "proj",
+                "version": "9.7.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "9.7.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "pugixml",
+                "version": "1.15",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.15",
+                "declared_directly": false
+              },
+              {
+                "full_name": "mpdecimal",
+                "version": "4.0.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.0.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "ca-certificates",
+                "version": "2025-12-02",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "2025-12-02",
+                "declared_directly": false
+              },
+              {
+                "full_name": "openssl@3",
+                "version": "3.6.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "3.6.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "readline",
+                "version": "8.3.3",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "8.3.3",
+                "declared_directly": false
+              },
+              {
+                "full_name": "sqlite",
+                "version": "3.51.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "3.51.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "python@3.14",
+                "version": "3.14.2",
+                "revision": 1,
+                "bottle_rebuild": 0,
+                "pkg_version": "3.14.2_1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "brotli",
+                "version": "1.2.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.2.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "dbus",
+                "version": "1.16.2",
+                "revision": 1,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.16.2_1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "pcre2",
+                "version": "10.47",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "10.47",
+                "declared_directly": false
+              },
+              {
+                "full_name": "glib",
+                "version": "2.86.3",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.86.3",
+                "declared_directly": false
+              },
+              {
+                "full_name": "xorgproto",
+                "version": "2025.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2025.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libxau",
+                "version": "1.0.12",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.0.12",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libxdmcp",
+                "version": "1.1.5",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.1.5",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libxcb",
+                "version": "1.17.0",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "1.17.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libx11",
+                "version": "1.8.12",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.8.12",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libxext",
+                "version": "1.3.7",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.3.7",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libxrender",
+                "version": "0.9.12",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "0.9.12",
+                "declared_directly": false
+              },
+              {
+                "full_name": "lzo",
+                "version": "2.10",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.10",
+                "declared_directly": false
+              },
+              {
+                "full_name": "pixman",
+                "version": "0.46.4",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "0.46.4",
+                "declared_directly": false
+              },
+              {
+                "full_name": "cairo",
+                "version": "1.18.4",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "1.18.4",
+                "declared_directly": false
+              },
+              {
+                "full_name": "graphite2",
+                "version": "1.3.14",
+                "revision": 0,
+                "bottle_rebuild": 2,
+                "pkg_version": "1.3.14",
+                "declared_directly": false
+              },
+              {
+                "full_name": "harfbuzz",
+                "version": "12.3.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "12.3.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libb2",
+                "version": "0.98.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "0.98.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "md4c",
+                "version": "0.5.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "0.5.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtbase",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtsvg",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtdeclarative",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libvorbis",
+                "version": "1.3.7",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "1.3.7",
+                "declared_directly": false
+              },
+              {
+                "full_name": "theora",
+                "version": "1.2.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.2.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "utf8cpp",
+                "version": "4.0.9",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.0.9",
+                "declared_directly": false
+              },
+              {
+                "full_name": "vtk",
+                "version": "9.5.2",
+                "revision": 3,
+                "bottle_rebuild": 0,
+                "pkg_version": "9.5.2_3",
+                "declared_directly": true
+              },
+              {
+                "full_name": "vinn-ie/openems/csxcad",
+                "version": "0.6.4",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "0.6.4",
+                "declared_directly": false
+              },
+              {
+                "full_name": "assimp",
+                "version": "6.0.4",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.0.4",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtshadertools",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qt3d",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qt5compat",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtcharts",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtconnectivity",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtdatavis3d",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtquicktimeline",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtquick3d",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtgraphs",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "abseil",
+                "version": "20260107.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "20260107.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "protobuf",
+                "version": "33.4",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "33.4",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtgrpc",
+                "version": "6.10.1",
+                "revision": 2,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1_2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtwebsockets",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qthttpserver",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "jasper",
+                "version": "4.2.8",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.2.8",
+                "declared_directly": false
+              },
+              {
+                "full_name": "little-cms2",
+                "version": "2.18",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.18",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libmng",
+                "version": "2.0.3",
+                "revision": 1,
+                "bottle_rebuild": 1,
+                "pkg_version": "2.0.3_1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "giflib",
+                "version": "5.2.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "5.2.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "webp",
+                "version": "1.6.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.6.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtimageformats",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtlanguageserver",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtserialport",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtpositioning",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtlocation",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtlottie",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtmultimedia",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtnetworkauth",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtquick3dphysics",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtquickeffectmaker",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtremoteobjects",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtscxml",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtsensors",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtserialbus",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtspeech",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "gumbo-parser",
+                "version": "0.13.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "0.13.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "litehtml",
+                "version": "0.9",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "0.9",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qttools",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qttranslations",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "hunspell",
+                "version": "1.7.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.7.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtvirtualkeyboard",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtwebchannel",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtwebengine",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtwebview",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qt",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": true
+              },
+              {
+                "full_name": "vinn-ie/openems/qcsxcad",
+                "version": "0.6.4",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "0.6.4",
+                "declared_directly": false
+              },
+              {
+                "full_name": "vinn-ie/openems/appcsxcad",
+                "version": "0.2.3",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "0.2.3",
+                "declared_directly": false
+              }
+            ],
+            "arch": "arm64",
+            "built_on": {
+              "os": "Macintosh",
+              "os_version": "macOS 26",
+              "cpu_family": "dunno",
+              "xcode": "26.2",
+              "clt": "26.2.0.0.1.1764812424",
+              "preferred_perl": "5.34"
+            }
+          },
+          "path_exec_files": [
+            "bin/nf2ff",
+            "bin/openEMS.sh",
+            "bin/openEMS"
+          ],
+          "all_files": [
+            ".brew/openems.rb",
+            "COPYING",
+            "INSTALL_RECEIPT.json",
+            "NEWS",
+            "README",
+            "TODO",
+            "bin/nf2ff",
+            "bin/openEMS",
+            "bin/openEMS.sh",
+            "include/openEMS/AdrOp.h",
+            "include/openEMS/ErrorMsg.h",
+            "include/openEMS/ExpenseLog.h",
+            "include/openEMS/aligned_allocator.h",
+            "include/openEMS/array_ops.h",
+            "include/openEMS/constants.h",
+            "include/openEMS/denormal.h",
+            "include/openEMS/engine.h",
+            "include/openEMS/engine_cylinder.h",
+            "include/openEMS/engine_cylindermultigrid.h",
+            "include/openEMS/engine_interface_base.h",
+            "include/openEMS/engine_interface_cylindrical_fdtd.h",
+            "include/openEMS/engine_interface_fdtd.h",
+            "include/openEMS/engine_interface_sse_fdtd.h",
+            "include/openEMS/engine_mpi.h",
+            "include/openEMS/engine_multithread.h",
+            "include/openEMS/engine_sse.h",
+            "include/openEMS/engine_sse_compressed.h",
+            "include/openEMS/excitation.h",
+            "include/openEMS/global.h",
+            "include/openEMS/hdf5_file_reader.h",
+            "include/openEMS/hdf5_file_writer.h",
+            "include/openEMS/nf2ff.h",
+            "include/openEMS/openems.h",
+            "include/openEMS/openems_fdtd_mpi.h",
+            "include/openEMS/openems_global.h",
+            "include/openEMS/operator.h",
+            "include/openEMS/operator_base.h",
+            "include/openEMS/operator_cylinder.h",
+            "include/openEMS/operator_cylindermultigrid.h",
+            "include/openEMS/operator_mpi.h",
+            "include/openEMS/operator_multithread.h",
+            "include/openEMS/operator_sse.h",
+            "include/openEMS/operator_sse_compressed.h",
+            "include/openEMS/processcurrent.h",
+            "include/openEMS/processfieldprobe.h",
+            "include/openEMS/processfields.h",
+            "include/openEMS/processfields_fd.h",
+            "include/openEMS/processfields_sar.h",
+            "include/openEMS/processfields_td.h",
+            "include/openEMS/processing.h",
+            "include/openEMS/processintegral.h",
+            "include/openEMS/processmodematch.h",
+            "include/openEMS/processvoltage.h",
+            "include/openEMS/sar_calculation.h",
+            "include/openEMS/signal.h",
+            "include/openEMS/useful.h",
+            "include/openEMS/vtk_file_writer.h",
+            "lib/libnf2ff.0.1.0.dylib",
+            "lib/libnf2ff.0.dylib",
+            "lib/libnf2ff.dylib",
+            "lib/libopenEMS.0.0.36.dylib",
+            "lib/libopenEMS.0.dylib",
+            "lib/libopenEMS.dylib",
+            "sbom.spdx.json",
+            "share/openEMS/matlab/AR_estimate.m",
+            "share/openEMS/matlab/Add2Queue.m",
+            "share/openEMS/matlab/AddCPWPort.m",
+            "share/openEMS/matlab/AddCircWaveGuidePort.m",
+            "share/openEMS/matlab/AddCoaxialPort.m",
+            "share/openEMS/matlab/AddCurvePort.m",
+            "share/openEMS/matlab/AddLumpedPort.m",
+            "share/openEMS/matlab/AddMRStub.m",
+            "share/openEMS/matlab/AddMSLPort.m",
+            "share/openEMS/matlab/AddPML.m",
+            "share/openEMS/matlab/AddRectWaveGuidePort.m",
+            "share/openEMS/matlab/AddStripLinePort.m",
+            "share/openEMS/matlab/AddWaveGuidePort.m",
+            "share/openEMS/matlab/AnalyzeNF2FF.m",
+            "share/openEMS/matlab/CalcNF2FF.m",
+            "share/openEMS/matlab/CheckQueue.m",
+            "share/openEMS/matlab/ConvertHDF5_VTK.m",
+            "share/openEMS/matlab/CreateNF2FFBox.m",
+            "share/openEMS/matlab/DFT_time2freq.m",
+            "share/openEMS/matlab/DelayFidelity.m",
+            "share/openEMS/matlab/Dump2VTK.m",
+            "share/openEMS/matlab/DumpFF2VTK.m",
+            "share/openEMS/matlab/FFT_time2freq.m",
+            "share/openEMS/matlab/FindFreeSSH.m",
+            "share/openEMS/matlab/FinishQueue.m",
+            "share/openEMS/matlab/GetField_Interpolation.m",
+            "share/openEMS/matlab/GetField_Range.m",
+            "share/openEMS/matlab/GetField_SubSampling.m",
+            "share/openEMS/matlab/GetField_TD2FD.m",
+            "share/openEMS/matlab/InitCylindricalFDTD.m",
+            "share/openEMS/matlab/InitFDTD.m",
+            "share/openEMS/matlab/InitQueue.m",
+            "share/openEMS/matlab/PlotHDF5FieldData.m",
+            "share/openEMS/matlab/ReadHDF5Attribute.m",
+            "share/openEMS/matlab/ReadHDF5Dump.m",
+            "share/openEMS/matlab/ReadHDF5FieldData.m",
+            "share/openEMS/matlab/ReadHDF5Mesh.m",
+            "share/openEMS/matlab/ReadUI.m",
+            "share/openEMS/matlab/ResultsQueue.m",
+            "share/openEMS/matlab/RunOpenEMS.m",
+            "share/openEMS/matlab/RunOpenEMS_MPI.m",
+            "share/openEMS/matlab/RunOpenEMS_Parallel.m",
+            "share/openEMS/matlab/SetBoundaryCond.m",
+            "share/openEMS/matlab/SetCustomExcite.m",
+            "share/openEMS/matlab/SetDiracExcite.m",
+            "share/openEMS/matlab/SetGaussExcite.m",
+            "share/openEMS/matlab/SetSinusExcite.m",
+            "share/openEMS/matlab/SetStepExcite.m",
+            "share/openEMS/matlab/SetupMPI.m",
+            "share/openEMS/matlab/Tutorials/Bent_Patch_Antenna.m",
+            "share/openEMS/matlab/Tutorials/CRLH_Extraction.m",
+            "share/openEMS/matlab/Tutorials/CRLH_LeakyWaveAnt.m",
+            "share/openEMS/matlab/Tutorials/Circ_Waveguide.m",
+            "share/openEMS/matlab/Tutorials/Conical_Horn_Antenna.m",
+            "share/openEMS/matlab/Tutorials/CreateCRLH.m",
+            "share/openEMS/matlab/Tutorials/CylindricalWave_CC.m",
+            "share/openEMS/matlab/Tutorials/Dipole_SAR.m",
+            "share/openEMS/matlab/Tutorials/Helical_Antenna.m",
+            "share/openEMS/matlab/Tutorials/Horn_Antenna.m",
+            "share/openEMS/matlab/Tutorials/MRI_LP_Birdcage.m",
+            "share/openEMS/matlab/Tutorials/MRI_Loop_Coil.m",
+            "share/openEMS/matlab/Tutorials/MSL_NotchFilter.m",
+            "share/openEMS/matlab/Tutorials/Parallel_Plate_Waveguide.m",
+            "share/openEMS/matlab/Tutorials/Patch_Antenna_Array.m",
+            "share/openEMS/matlab/Tutorials/Patch_Antenna_Phased_Array.m",
+            "share/openEMS/matlab/Tutorials/RCS_Sphere.m",
+            "share/openEMS/matlab/Tutorials/RadarUWBTutorial.m",
+            "share/openEMS/matlab/Tutorials/Rect_Waveguide.m",
+            "share/openEMS/matlab/Tutorials/Simple_Patch_Antenna.m",
+            "share/openEMS/matlab/Tutorials/StripLine2MSL.m",
+            "share/openEMS/matlab/Tutorials/readme",
+            "share/openEMS/matlab/WriteHDF5.m",
+            "share/openEMS/matlab/WriteOpenEMS.m",
+            "share/openEMS/matlab/calcLumpedPort.m",
+            "share/openEMS/matlab/calcPort.m",
+            "share/openEMS/matlab/calcTLPort.m",
+            "share/openEMS/matlab/calcWGPort.m",
+            "share/openEMS/matlab/calc_ypar.m",
+            "share/openEMS/matlab/examples/__deprecated__/MSL2.m",
+            "share/openEMS/matlab/examples/antennas/Bi_Quad_Antenna.m",
+            "share/openEMS/matlab/examples/antennas/Patch_Antenna.m",
+            "share/openEMS/matlab/examples/antennas/Patch_Antenna_Array.m",
+            "share/openEMS/matlab/examples/antennas/infDipol.m",
+            "share/openEMS/matlab/examples/antennas/inverted_f.m",
+            "share/openEMS/matlab/examples/optimizer/optimizer_asco.m",
+            "share/openEMS/matlab/examples/optimizer/optimizer_simfun.m",
+            "share/openEMS/matlab/examples/other/Helix.m",
+            "share/openEMS/matlab/examples/other/LumpedElement.m",
+            "share/openEMS/matlab/examples/other/Metamaterial_PlaneWave_Drude.m",
+            "share/openEMS/matlab/examples/other/PML_reflection_analysis.m",
+            "share/openEMS/matlab/examples/other/PlaneWave.m",
+            "share/openEMS/matlab/examples/other/gauss_excitation_test.m",
+            "share/openEMS/matlab/examples/other/resistance_sheet.m",
+            "share/openEMS/matlab/examples/transmission_lines/CPW_Line.m",
+            "share/openEMS/matlab/examples/transmission_lines/Finite_Stripline.m",
+            "share/openEMS/matlab/examples/transmission_lines/MSL.m",
+            "share/openEMS/matlab/examples/transmission_lines/MSL_Losses.m",
+            "share/openEMS/matlab/examples/transmission_lines/Stripline.m",
+            "share/openEMS/matlab/examples/transmission_lines/directional_coupler.m",
+            "share/openEMS/matlab/examples/waveguide/Circ_Waveguide.m",
+            "share/openEMS/matlab/examples/waveguide/Circ_Waveguide_CylinderCoords.m",
+            "share/openEMS/matlab/examples/waveguide/Coax.m",
+            "share/openEMS/matlab/examples/waveguide/Coax_CylinderCoords.m",
+            "share/openEMS/matlab/examples/waveguide/Coax_Cylindrical_MG.m",
+            "share/openEMS/matlab/examples/waveguide/Rect_Waveguide.m",
+            "share/openEMS/matlab/h5readatt_octave.cc",
+            "share/openEMS/matlab/harminv.m",
+            "share/openEMS/matlab/optimize.m",
+            "share/openEMS/matlab/optimizer_asco_sim.m",
+            "share/openEMS/matlab/physical_constants.m",
+            "share/openEMS/matlab/plotFF3D.m",
+            "share/openEMS/matlab/plotFFdB.m",
+            "share/openEMS/matlab/plotRefl.m",
+            "share/openEMS/matlab/polarFF.m",
+            "share/openEMS/matlab/private/ReadNF2FF.m",
+            "share/openEMS/matlab/private/invoke_openEMS.m",
+            "share/openEMS/matlab/queue_addProcess.m",
+            "share/openEMS/matlab/queue_checkProcess.m",
+            "share/openEMS/matlab/queue_delProcess.m",
+            "share/openEMS/matlab/setup.m"
+          ],
+          "installed_size": 2038450
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,676 @@
+{
+  "vinn-ie/openems/csxcad": {
+    "formula": {
+      "name": "csxcad",
+      "pkg_version": "0.6.4",
+      "path": "Library/Taps/vinn-ie/homebrew-openems/Formula/csxcad.rb",
+      "tap_git_path": "Formula/csxcad.rb",
+      "tap_git_revision": "df93fecac9d1d475973c9ee7dad8079a72c5a34b",
+      "tap_git_remote": "file:///Users/runner/work/homebrew-openems/homebrew-openems",
+      "desc": "C++ library for describing geometrical objects and their properties",
+      "license": "LGPL-3.0-or-later",
+      "homepage": "https://github.com/thliebig/CSXCAD"
+    },
+    "bottle": {
+      "root_url": "https://github.com/vinn-ie/homebrew-openems/releases/download/v0.0.9-test",
+      "cellar": "any",
+      "rebuild": 0,
+      "date": "2026-01-31T13:01:18Z",
+      "tags": {
+        "arm64_sequoia": {
+          "filename": "csxcad-0.6.4.arm64_sequoia.bottle.tar.gz",
+          "local_filename": "csxcad--0.6.4.arm64_sequoia.bottle.tar.gz",
+          "sha256": "5a947fdb5c44f1003d212e4cdbb2f64c7d3d0f45be5878d7270d68d037da3e3c",
+          "tab": {
+            "homebrew_version": "5.0.12",
+            "changed_files": [],
+            "source_modified_time": 1769103895,
+            "compiler": "clang",
+            "runtime_dependencies": [
+              {
+                "full_name": "icu4c@78",
+                "version": "78.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "78.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "xz",
+                "version": "5.8.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "5.8.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "lz4",
+                "version": "1.10.0",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "1.10.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "zstd",
+                "version": "1.5.7",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "1.5.7",
+                "declared_directly": false
+              },
+              {
+                "full_name": "boost",
+                "version": "1.90.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.90.0",
+                "declared_directly": true
+              },
+              {
+                "full_name": "eigen",
+                "version": "5.0.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "5.0.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "gmp",
+                "version": "6.3.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.3.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "mpfr",
+                "version": "4.2.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.2.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "cgal",
+                "version": "6.1.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.1.1",
+                "declared_directly": true
+              },
+              {
+                "full_name": "vinn-ie/openems/fparser",
+                "version": "4.5.2.1",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "4.5.2.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "isl",
+                "version": "0.27",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "0.27",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libmpc",
+                "version": "1.3.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.3.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "gcc",
+                "version": "15.2.0",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "15.2.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libaec",
+                "version": "1.1.5",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.1.5",
+                "declared_directly": false
+              },
+              {
+                "full_name": "pkgconf",
+                "version": "2.5.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.5.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "hdf5",
+                "version": "2.0.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.0.0",
+                "declared_directly": true
+              },
+              {
+                "full_name": "cgns",
+                "version": "4.5.1",
+                "revision": 1,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.5.1_1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "double-conversion",
+                "version": "3.4.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "3.4.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libpng",
+                "version": "1.6.54",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.6.54",
+                "declared_directly": false
+              },
+              {
+                "full_name": "freetype",
+                "version": "2.14.1",
+                "revision": 1,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.14.1_1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libunistring",
+                "version": "1.4.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.4.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "gettext",
+                "version": "1.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "fontconfig",
+                "version": "2.17.1",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "2.17.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "jpeg-turbo",
+                "version": "3.1.3",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "3.1.3",
+                "declared_directly": false
+              },
+              {
+                "full_name": "jsoncpp",
+                "version": "1.9.6",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.9.6",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libharu",
+                "version": "2.4.5",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.4.5",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libogg",
+                "version": "1.3.6",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.3.6",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libtiff",
+                "version": "4.7.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.7.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "netcdf",
+                "version": "4.9.3",
+                "revision": 2,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.9.3_2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "nlohmann-json",
+                "version": "3.12.0",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "3.12.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "proj",
+                "version": "9.7.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "9.7.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "pugixml",
+                "version": "1.15",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.15",
+                "declared_directly": false
+              },
+              {
+                "full_name": "mpdecimal",
+                "version": "4.0.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.0.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "ca-certificates",
+                "version": "2025-12-02",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "2025-12-02",
+                "declared_directly": false
+              },
+              {
+                "full_name": "openssl@3",
+                "version": "3.6.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "3.6.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "readline",
+                "version": "8.3.3",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "8.3.3",
+                "declared_directly": false
+              },
+              {
+                "full_name": "sqlite",
+                "version": "3.51.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "3.51.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "python@3.14",
+                "version": "3.14.2",
+                "revision": 1,
+                "bottle_rebuild": 0,
+                "pkg_version": "3.14.2_1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "brotli",
+                "version": "1.2.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.2.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "dbus",
+                "version": "1.16.2",
+                "revision": 1,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.16.2_1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "pcre2",
+                "version": "10.47",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "10.47",
+                "declared_directly": false
+              },
+              {
+                "full_name": "glib",
+                "version": "2.86.3",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.86.3",
+                "declared_directly": false
+              },
+              {
+                "full_name": "xorgproto",
+                "version": "2025.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2025.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libxau",
+                "version": "1.0.12",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.0.12",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libxdmcp",
+                "version": "1.1.5",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.1.5",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libxcb",
+                "version": "1.17.0",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "1.17.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libx11",
+                "version": "1.8.12",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.8.12",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libxext",
+                "version": "1.3.7",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.3.7",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libxrender",
+                "version": "0.9.12",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "0.9.12",
+                "declared_directly": false
+              },
+              {
+                "full_name": "lzo",
+                "version": "2.10",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2.10",
+                "declared_directly": false
+              },
+              {
+                "full_name": "pixman",
+                "version": "0.46.4",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "0.46.4",
+                "declared_directly": false
+              },
+              {
+                "full_name": "cairo",
+                "version": "1.18.4",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "1.18.4",
+                "declared_directly": false
+              },
+              {
+                "full_name": "graphite2",
+                "version": "1.3.14",
+                "revision": 0,
+                "bottle_rebuild": 2,
+                "pkg_version": "1.3.14",
+                "declared_directly": false
+              },
+              {
+                "full_name": "harfbuzz",
+                "version": "12.3.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "12.3.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libb2",
+                "version": "0.98.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "0.98.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "md4c",
+                "version": "0.5.2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "0.5.2",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtbase",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtsvg",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "qtdeclarative",
+                "version": "6.10.1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "6.10.1",
+                "declared_directly": false
+              },
+              {
+                "full_name": "libvorbis",
+                "version": "1.3.7",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "1.3.7",
+                "declared_directly": false
+              },
+              {
+                "full_name": "theora",
+                "version": "1.2.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.2.0",
+                "declared_directly": false
+              },
+              {
+                "full_name": "utf8cpp",
+                "version": "4.0.9",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "4.0.9",
+                "declared_directly": false
+              },
+              {
+                "full_name": "vtk",
+                "version": "9.5.2",
+                "revision": 3,
+                "bottle_rebuild": 0,
+                "pkg_version": "9.5.2_3",
+                "declared_directly": true
+              }
+            ],
+            "arch": "arm64",
+            "built_on": {
+              "os": "Macintosh",
+              "os_version": "macOS 15.7",
+              "cpu_family": "dunno",
+              "xcode": "16.4",
+              "clt": "16.4.0.0.1.1747106510",
+              "preferred_perl": "5.34"
+            }
+          },
+          "path_exec_files": [],
+          "all_files": [
+            ".brew/csxcad.rb",
+            "COPYING",
+            "INSTALL_RECEIPT.json",
+            "NEWS",
+            "README",
+            "include/CSXCAD/CSBackgroundMaterial.h",
+            "include/CSXCAD/CSFunctionParser.h",
+            "include/CSXCAD/CSPrimBox.h",
+            "include/CSXCAD/CSPrimCurve.h",
+            "include/CSXCAD/CSPrimCylinder.h",
+            "include/CSXCAD/CSPrimCylindricalShell.h",
+            "include/CSXCAD/CSPrimLinPoly.h",
+            "include/CSXCAD/CSPrimMultiBox.h",
+            "include/CSXCAD/CSPrimPoint.h",
+            "include/CSXCAD/CSPrimPolygon.h",
+            "include/CSXCAD/CSPrimPolyhedron.h",
+            "include/CSXCAD/CSPrimPolyhedronReader.h",
+            "include/CSXCAD/CSPrimPolyhedron_p.h",
+            "include/CSXCAD/CSPrimRotPoly.h",
+            "include/CSXCAD/CSPrimSphere.h",
+            "include/CSXCAD/CSPrimSphericalShell.h",
+            "include/CSXCAD/CSPrimUserDefined.h",
+            "include/CSXCAD/CSPrimWire.h",
+            "include/CSXCAD/CSPrimitives.h",
+            "include/CSXCAD/CSPropAbsorbingBC.h",
+            "include/CSXCAD/CSPropConductingSheet.h",
+            "include/CSXCAD/CSPropDebyeMaterial.h",
+            "include/CSXCAD/CSPropDiscMaterial.h",
+            "include/CSXCAD/CSPropDispersiveMaterial.h",
+            "include/CSXCAD/CSPropDumpBox.h",
+            "include/CSXCAD/CSPropExcitation.h",
+            "include/CSXCAD/CSPropLorentzMaterial.h",
+            "include/CSXCAD/CSPropLumpedElement.h",
+            "include/CSXCAD/CSPropMaterial.h",
+            "include/CSXCAD/CSPropMetal.h",
+            "include/CSXCAD/CSPropProbeBox.h",
+            "include/CSXCAD/CSPropResBox.h",
+            "include/CSXCAD/CSPropUnknown.h",
+            "include/CSXCAD/CSProperties.h",
+            "include/CSXCAD/CSRectGrid.h",
+            "include/CSXCAD/CSTransform.h",
+            "include/CSXCAD/CSUseful.h",
+            "include/CSXCAD/CSXCAD_Global.h",
+            "include/CSXCAD/ContinuousStructure.h",
+            "include/CSXCAD/ParameterCoord.h",
+            "include/CSXCAD/ParameterObjects.h",
+            "include/CSXCAD/tinystr.h",
+            "include/CSXCAD/tinyxml.h",
+            "include/tinyxml/tinystr.h",
+            "include/tinyxml/tinyxml.h",
+            "lib/libCSXCAD.0.6.3.dylib",
+            "lib/libCSXCAD.0.dylib",
+            "lib/libCSXCAD.dylib",
+            "lib/libtinyxml.a",
+            "sbom.spdx.json",
+            "share/CSXCAD/matlab/AddBox.m",
+            "share/CSXCAD/matlab/AddConductingSheet.m",
+            "share/CSXCAD/matlab/AddCurve.m",
+            "share/CSXCAD/matlab/AddCylinder.m",
+            "share/CSXCAD/matlab/AddCylindricalShell.m",
+            "share/CSXCAD/matlab/AddDebyeMaterial.m",
+            "share/CSXCAD/matlab/AddDiscMaterial.m",
+            "share/CSXCAD/matlab/AddDjordjevicSarkarMaterial.m",
+            "share/CSXCAD/matlab/AddDump.m",
+            "share/CSXCAD/matlab/AddExcitation.m",
+            "share/CSXCAD/matlab/AddLinPoly.m",
+            "share/CSXCAD/matlab/AddLorentzMaterial.m",
+            "share/CSXCAD/matlab/AddLumpedElement.m",
+            "share/CSXCAD/matlab/AddMaterial.m",
+            "share/CSXCAD/matlab/AddMetal.m",
+            "share/CSXCAD/matlab/AddPlaneWaveExcite.m",
+            "share/CSXCAD/matlab/AddPoint.m",
+            "share/CSXCAD/matlab/AddPolygon.m",
+            "share/CSXCAD/matlab/AddPolyhedron.m",
+            "share/CSXCAD/matlab/AddProbe.m",
+            "share/CSXCAD/matlab/AddPropAttribute.m",
+            "share/CSXCAD/matlab/AddRotPoly.m",
+            "share/CSXCAD/matlab/AddSphere.m",
+            "share/CSXCAD/matlab/AddSphericalShell.m",
+            "share/CSXCAD/matlab/AddWire.m",
+            "share/CSXCAD/matlab/AnalyseMesh.m",
+            "share/CSXCAD/matlab/AutoSmoothMeshLines.m",
+            "share/CSXCAD/matlab/CSXGeomPlot.m",
+            "share/CSXCAD/matlab/CalcDebyeMaterial.m",
+            "share/CSXCAD/matlab/CalcDjordjevicSarkarApprox.m",
+            "share/CSXCAD/matlab/CalcDrudeMaterial.m",
+            "share/CSXCAD/matlab/CalcLorentzMaterial.m",
+            "share/CSXCAD/matlab/CheckMesh.m",
+            "share/CSXCAD/matlab/Convert_VF_DiscMaterial.m",
+            "share/CSXCAD/matlab/CreateDiscMaterial.m",
+            "share/CSXCAD/matlab/DefineRectGrid.m",
+            "share/CSXCAD/matlab/DetectEdges.m",
+            "share/CSXCAD/matlab/DirChar2Int.m",
+            "share/CSXCAD/matlab/ImportPLY.m",
+            "share/CSXCAD/matlab/ImportSTL.m",
+            "share/CSXCAD/matlab/InitCSX.m",
+            "share/CSXCAD/matlab/RecursiveSmoothMesh.m",
+            "share/CSXCAD/matlab/SetBackgroundMaterial.m",
+            "share/CSXCAD/matlab/SetExcitationWeight.m",
+            "share/CSXCAD/matlab/SetMaterialProperty.m",
+            "share/CSXCAD/matlab/SetMaterialWeight.m",
+            "share/CSXCAD/matlab/SmoothMesh.m",
+            "share/CSXCAD/matlab/SmoothMeshLines.m",
+            "share/CSXCAD/matlab/SmoothMeshLines2.m",
+            "share/CSXCAD/matlab/export_empire.m",
+            "share/CSXCAD/matlab/export_excellon.m",
+            "share/CSXCAD/matlab/export_gerber.m",
+            "share/CSXCAD/matlab/export_povray.m",
+            "share/CSXCAD/matlab/isOctave.m",
+            "share/CSXCAD/matlab/private/Add2Property.m",
+            "share/CSXCAD/matlab/private/AddPrimitiveArgs.m",
+            "share/CSXCAD/matlab/private/AddProperty.m",
+            "share/CSXCAD/matlab/private/CheckSymmtricLines.m",
+            "share/CSXCAD/matlab/private/FindProperty.m",
+            "share/CSXCAD/matlab/private/GetPropertyPosition.m",
+            "share/CSXCAD/matlab/private/GetPropertyType.m",
+            "share/CSXCAD/matlab/private/SetPropertyArgs.m",
+            "share/CSXCAD/matlab/private/SmoothRange.m",
+            "share/CSXCAD/matlab/private/octave_struct2xml_2.m",
+            "share/CSXCAD/matlab/private/struct_2_xmlNode.m",
+            "share/CSXCAD/matlab/private/vector2str.m",
+            "share/CSXCAD/matlab/searchBinary.m",
+            "share/CSXCAD/matlab/struct_2_xml.m"
+          ],
+          "installed_size": 1223914
+        }
+      }
+    }
+  }
+}
