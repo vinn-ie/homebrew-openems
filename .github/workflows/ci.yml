@@ -343,7 +343,17 @@ jobs:
             echo "--- $formula ---"
             if grep -q "bottle do" Formula/${formula}.rb; then
               echo "✅ Bottle block found in $formula"
-              grep -A 10 "bottle do" Formula/${formula}.rb
+              # Extract bottle block and check for all expected platforms
+              bottle_block=$(sed -n '/bottle do/,/end/p' Formula/${formula}.rb || true)
+              for platform in arm64_sequoia arm64_sonoma arm64_tahoe; do
+                if echo "$bottle_block" | grep -q "$platform"; then
+                  echo "  ✅ $platform entry present"
+                else
+                  echo "  ❌ Missing $platform entry in $formula"
+                  exit 1
+                fi
+              done
+              echo "$bottle_block"
             else
               echo "❌ No bottle block in $formula"
               exit 1
@@ -356,20 +366,9 @@ jobs:
           for formula in fparser csxcad qcsxcad appcsxcad openems; do
             echo "--- Installing $formula ---"
             
-            # Get the version from 'brew info' JSON (more robust)
-            formula_version=$(brew info --json=v2 "vinn-ie/openems/$formula" | python3 -c "import sys,json; j=json.load(sys.stdin); print(j['formulae'][0]['versions']['stable'])")
-            if [ -z "$formula_version" ] || [ "$formula_version" = "None" ]; then
-              echo "❌ Could not determine version for $formula via brew info; falling back to formula file"
-              formula_version=$(grep '^  version "' "Formula/${formula}.rb" | sed 's/.*version "\([^"]*\)".*/\1/')
-            fi
-            if [ -z "$formula_version" ]; then
-              echo "❌ Could not determine version for $formula"
-              exit 1
-            fi
-            echo "Installing $formula@$formula_version"
-            
-            # Capture install output to check for bottle usage
-            install_output=$(brew install "vinn-ie/openems/$formula@$formula_version" 2>&1) || true
+            # Install the formula from the tap (do not use @version suffix)
+            echo "Installing $formula"
+            install_output=$(brew install "vinn-ie/openems/$formula" 2>&1) || true
             echo "$install_output"
             
             # Check if it was poured from bottle (not built from source)
@@ -378,7 +377,7 @@ jobs:
             elif echo "$install_output" | grep -q "already installed"; then
               echo "ℹ️  $formula was already installed"
               # Reinstall to verify bottle
-              reinstall_output=$(brew reinstall "vinn-ie/openems/$formula@$formula_version" 2>&1) || true
+              reinstall_output=$(brew reinstall "vinn-ie/openems/$formula" 2>&1) || true
               echo "$reinstall_output"
               if echo "$reinstall_output" | grep -q "Pouring"; then
                 echo "✅ $formula reinstalled from bottle"
@@ -547,16 +546,35 @@ jobs:
       - name: Merge bottle info into formulas
         run: |
           echo "=== Available JSON files ==="
-          ls -la ./bottle-json/
-          
-          echo "=== Merging bottle blocks into formulas ==="
-          for json_file in ./bottle-json/*.json; do
-            echo "Processing: $json_file"
+          ls -la ./bottle-json/ || true
+
+          echo "=== Merging bottle blocks into formulas (in temporary copy) ==="
+          ORIG_DIR=$(pwd)
+          TMPDIR=$(mktemp -d)
+          echo "Using temp dir: $TMPDIR"
+
+          # Copy repository contents to temp dir but remove git metadata so
+          # brew bottle --merge cannot commit. We'll run all merges there and
+          # then copy back modified Formula files.
+          rsync -a --exclude='.git' "$ORIG_DIR/" "$TMPDIR/"
+          cd "$TMPDIR"
+
+          # Find all JSONs under the downloaded bottle-json directory (which
+          # may contain per-OS subdirectories) and merge them into the
+          # temp repo without creating commits.
+          find "$ORIG_DIR/bottle-json" -type f -name '*.json' -print0 | while IFS= read -r -d '' json_file; do
+            echo "Processing in temp repo: $json_file"
             if ! brew bottle --merge "$json_file" --write; then
               echo "❌ Failed to merge bottle info from $json_file"
               exit 1
             fi
           done
+
+          # Copy back modified Formula files to original checkout
+          echo "Copying updated Formula files back to repository"
+          cp -a "$TMPDIR/Formula/"* "$ORIG_DIR/Formula/" || true
+          cd "$ORIG_DIR"
+          rm -rf "$TMPDIR"
           
           echo "=== Updated formulas ==="
           git diff Formula/
