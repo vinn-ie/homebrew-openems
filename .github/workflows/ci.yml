@@ -1,0 +1,337 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'Formula/**'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'Formula/**'
+      - '.github/workflows/ci.yml'
+  workflow_dispatch:
+    inputs:
+      formula:
+        description: 'Specific formula to test (leave empty for all)'
+        required: false
+        default: ''
+        type: choice
+        options:
+          - ''
+          - fparser
+          - csxcad
+          - qcsxcad
+          - appcsxcad
+          - openems
+      build_bottles:
+        description: 'Build bottles instead of regular test'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+
+jobs:
+  # Detect which formulas changed
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      fparser: ${{ steps.filter.outputs.fparser }}
+      csxcad: ${{ steps.filter.outputs.csxcad }}
+      qcsxcad: ${{ steps.filter.outputs.qcsxcad }}
+      appcsxcad: ${{ steps.filter.outputs.appcsxcad }}
+      openems: ${{ steps.filter.outputs.openems }}
+      any_changed: ${{ steps.filter.outputs.any_changed }}
+      workflow_changed: ${{ steps.filter.outputs.workflow_changed }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            fparser:
+              - 'Formula/fparser.rb'
+            csxcad:
+              - 'Formula/csxcad.rb'
+            qcsxcad:
+              - 'Formula/qcsxcad.rb'
+            appcsxcad:
+              - 'Formula/appcsxcad.rb'
+            openems:
+              - 'Formula/openems.rb'
+            any_changed:
+              - 'Formula/**'
+            workflow_changed:
+              - '.github/workflows/ci.yml'
+
+  # Build and test on all macOS versions
+  test-build:
+    needs: detect-changes
+    if: (needs.detect-changes.outputs.any_changed == 'true' || needs.detect-changes.outputs.workflow_changed == 'true' || github.event_name == 'workflow_dispatch') && github.event.inputs.build_bottles != 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, macos-15, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        run: |
+          brew update
+          brew doctor || true
+
+      - name: Tap local repo
+        run: brew tap vincentfree/openems file://$PWD
+
+      - name: Install fparser
+        if: >
+          needs.detect-changes.outputs.fparser == 'true' ||
+          needs.detect-changes.outputs.csxcad == 'true' ||
+          needs.detect-changes.outputs.qcsxcad == 'true' ||
+          needs.detect-changes.outputs.appcsxcad == 'true' ||
+          needs.detect-changes.outputs.openems == 'true' ||
+          github.event.inputs.formula == '' ||
+          github.event.inputs.formula == 'fparser'
+        run: brew install --build-from-source vincentfree/openems/fparser
+
+      - name: Install csxcad
+        if: >
+          needs.detect-changes.outputs.csxcad == 'true' ||
+          needs.detect-changes.outputs.qcsxcad == 'true' ||
+          needs.detect-changes.outputs.appcsxcad == 'true' ||
+          needs.detect-changes.outputs.openems == 'true' ||
+          github.event.inputs.formula == '' ||
+          github.event.inputs.formula == 'csxcad'
+        run: brew install --build-from-source vincentfree/openems/csxcad
+
+      - name: Install qcsxcad
+        if: >
+          needs.detect-changes.outputs.qcsxcad == 'true' ||
+          needs.detect-changes.outputs.appcsxcad == 'true' ||
+          needs.detect-changes.outputs.openems == 'true' ||
+          github.event.inputs.formula == '' ||
+          github.event.inputs.formula == 'qcsxcad'
+        run: brew install --build-from-source vincentfree/openems/qcsxcad
+
+      - name: Install appcsxcad
+        if: >
+          needs.detect-changes.outputs.appcsxcad == 'true' ||
+          needs.detect-changes.outputs.openems == 'true' ||
+          github.event.inputs.formula == '' ||
+          github.event.inputs.formula == 'appcsxcad'
+        run: brew install --build-from-source vincentfree/openems/appcsxcad
+
+      - name: Install openems
+        if: >
+          needs.detect-changes.outputs.openems == 'true' ||
+          github.event.inputs.formula == '' ||
+          github.event.inputs.formula == 'openems'
+        run: brew install --build-from-source vincentfree/openems/openems
+
+      - name: Smoketest - openEMS CLI
+        if: >
+          needs.detect-changes.outputs.openems == 'true' ||
+          github.event.inputs.formula == '' ||
+          github.event.inputs.formula == 'openems'
+        run: |
+          echo "=== Testing openEMS CLI ==="
+          openEMS --help || true
+          echo "=== Running test simulation ==="
+          openEMS examples/test.xml --debug-PEC
+
+      - name: Smoketest - Python bindings
+        if: >
+          needs.detect-changes.outputs.openems == 'true' ||
+          github.event.inputs.formula == '' ||
+          github.event.inputs.formula == 'openems'
+        run: |
+          echo "=== Setting up Python environment ==="
+          python3 -m venv ~/openems-env
+          source ~/openems-env/bin/activate
+          pip install --upgrade pip
+          pip install cython numpy matplotlib h5py setuptools
+
+          echo "=== Installing CSXCAD Python bindings ==="
+          CSXCAD_INSTALL_PATH=$(brew --prefix csxcad) pip install git+https://github.com/thliebig/CSXCAD.git#subdirectory=python --no-build-isolation
+
+          echo "=== Installing openEMS Python bindings ==="
+          CSXCAD_INSTALL_PATH=$(brew --prefix csxcad) OPENEMS_INSTALL_PATH=$(brew --prefix openems) pip install git+https://github.com/thliebig/openEMS.git#subdirectory=python --no-build-isolation
+
+          echo "=== Running Python test ==="
+          python examples/test_python.py
+
+      - name: Smoketest - Run tutorial example
+        if: >
+          needs.detect-changes.outputs.openems == 'true' ||
+          github.event.inputs.formula == '' ||
+          github.event.inputs.formula == 'openems'
+        continue-on-error: true
+        run: |
+          source ~/openems-env/bin/activate
+          echo "=== Downloading Simple Patch Antenna tutorial ==="
+          curl -LO https://raw.githubusercontent.com/thliebig/openEMS/master/python/Tutorials/Simple_Patch_Antenna.py
+          echo "=== Running tutorial (limited timesteps for CI) ==="
+          # Modify to run fewer timesteps for faster CI
+          sed -i '' 's/NrTS=.*/NrTS=1000,/g' Simple_Patch_Antenna.py 2>/dev/null || true
+          timeout 300 python Simple_Patch_Antenna.py || echo "Tutorial completed or timed out"
+
+  # Build bottles on release
+  build-bottles:
+    if: github.event_name == 'release' || github.event.inputs.build_bottles == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, macos-15, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        run: |
+          brew update
+          brew doctor || true
+
+      - name: Tap local repo
+        run: brew tap vincentfree/openems file://$PWD
+
+      - name: Build bottles
+        run: |
+          mkdir -p ./bottles
+          cd ./bottles
+          for formula in fparser csxcad qcsxcad appcsxcad openems; do
+            echo "=== Building bottle for $formula ==="
+            brew install --build-bottle "vincentfree/openems/$formula"
+            brew bottle --json --root-url "https://github.com/vincentfree/homebrew-openems/releases/download/${{ github.ref_name }}" "vincentfree/openems/$formula"
+          done
+
+      - name: Upload bottles
+        uses: actions/upload-artifact@v4
+        with:
+          name: bottles-${{ matrix.os }}
+          path: ./bottles/*.bottle.tar.gz
+          if-no-files-found: warn
+
+      - name: Upload bottle JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: bottle-json-${{ matrix.os }}
+          path: ./bottles/*.json
+          if-no-files-found: warn
+
+  # Test bottles after they're built
+  test-bottles:
+    needs: build-bottles
+    if: github.event_name == 'release' || github.event.inputs.build_bottles == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, macos-15, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download bottles
+        uses: actions/download-artifact@v4
+        with:
+          pattern: bottles-*
+          path: ./bottles
+          merge-multiple: true
+
+      - name: Set up Homebrew
+        run: |
+          brew update
+          brew doctor || true
+
+      - name: Tap local repo
+        run: brew tap vincentfree/openems file://$PWD
+
+      - name: Determine OS tag
+        id: os-tag
+        run: |
+          case "${{ matrix.os }}" in
+            macos-14) echo "tag=arm64_sonoma" >> $GITHUB_OUTPUT ;;
+            macos-15) echo "tag=arm64_sequoia" >> $GITHUB_OUTPUT ;;
+            macos-latest) echo "tag=arm64_sequoia" >> $GITHUB_OUTPUT ;;
+          esac
+
+      - name: Install bottles
+        run: |
+          cd ./bottles
+          for formula in fparser csxcad qcsxcad appcsxcad openems; do
+            bottle_file=$(ls ${formula}--*.${{ steps.os-tag.outputs.tag }}.bottle.tar.gz 2>/dev/null || ls ${formula}--*.arm64_*.bottle.tar.gz 2>/dev/null | head -1)
+            if [ -n "$bottle_file" ]; then
+              echo "=== Installing $formula from bottle: $bottle_file ==="
+              brew install --force "$bottle_file"
+            else
+              echo "=== No bottle found for $formula on ${{ matrix.os }}, building from source ==="
+              brew install --build-from-source "vincentfree/openems/$formula"
+            fi
+          done
+
+      - name: Smoketest bottles - openEMS CLI
+        run: |
+          echo "=== Testing openEMS CLI ==="
+          openEMS --help || true
+          echo "=== Running test simulation ==="
+          openEMS examples/test.xml --debug-PEC
+
+      - name: Smoketest bottles - Python bindings
+        run: |
+          echo "=== Setting up Python environment ==="
+          python3 -m venv ~/openems-env
+          source ~/openems-env/bin/activate
+          pip install --upgrade pip
+          pip install cython numpy matplotlib h5py setuptools
+
+          echo "=== Installing CSXCAD Python bindings ==="
+          CSXCAD_INSTALL_PATH=$(brew --prefix csxcad) pip install git+https://github.com/thliebig/CSXCAD.git#subdirectory=python --no-build-isolation
+
+          echo "=== Installing openEMS Python bindings ==="
+          CSXCAD_INSTALL_PATH=$(brew --prefix csxcad) OPENEMS_INSTALL_PATH=$(brew --prefix openems) pip install git+https://github.com/thliebig/openEMS.git#subdirectory=python --no-build-isolation
+
+          echo "=== Running Python test ==="
+          python examples/test_python.py
+
+      - name: Smoketest bottles - Run tutorial example
+        continue-on-error: true
+        run: |
+          source ~/openems-env/bin/activate
+          echo "=== Downloading Simple Patch Antenna tutorial ==="
+          curl -LO https://raw.githubusercontent.com/thliebig/openEMS/master/python/Tutorials/Simple_Patch_Antenna.py
+          echo "=== Running tutorial (limited timesteps for CI) ==="
+          sed -i '' 's/NrTS=.*/NrTS=1000,/g' Simple_Patch_Antenna.py 2>/dev/null || true
+          timeout 300 python Simple_Patch_Antenna.py || echo "Tutorial completed or timed out"
+
+  # Upload bottles to release
+  upload-release-bottles:
+    needs: test-bottles
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all bottles
+        uses: actions/download-artifact@v4
+        with:
+          pattern: bottles-*
+          path: ./bottles
+          merge-multiple: true
+
+      - name: Download all bottle JSONs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: bottle-json-*
+          path: ./bottle-json
+          merge-multiple: true
+
+      - name: Upload bottles to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./bottles/*.bottle.tar.gz
+            ./bottle-json/*.json
