@@ -4,8 +4,9 @@
 class Qcsxcad < Formula
   desc "Qt-based GUI library for CSXCAD visualization"
   homepage "https://github.com/thliebig/QCSXCAD"
-  # Using HEAD to stay compatible with csxcad HEAD (API changes between releases)
-  url "https://github.com/thliebig/QCSXCAD.git", branch: "master"
+  # Pinned to openEMS 0.0.36 submodule commit
+  url "https://github.com/thliebig/QCSXCAD.git",
+      revision: "63ac6f8c623665f06fdb35765048cb52c7190ce0"
   version "0.6.4"
   license "LGPL-3.0-or-later"
 

@@ -2,10 +2,9 @@
 # frozen_string_literal: true
 
 class Openems < Formula
-  # Use git HEAD for Python bindings compatibility
+  # Pinned to openEMS 0.0.36 release commit
   url "https://github.com/thliebig/openEMS.git",
-      branch:   "master",
-      revision: "f99c95d0c96de393b2f6c1d6d7c4dc2ab62ab3b9"
+      revision: "32c5c6b537b33a8b70f9ba4f5c9a8ecbb12777b3"
   version "0.0.36"
   license "GPL-3.0-or-later"
 

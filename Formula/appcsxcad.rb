@@ -4,9 +4,9 @@
 class Appcsxcad < Formula
   desc "Standalone GUI application for viewing CSXCAD 3D models"
   homepage "https://github.com/thliebig/AppCSXCAD"
+  # Pinned to openEMS 0.0.36 submodule commit
   url "https://github.com/thliebig/AppCSXCAD.git",
-      branch: "master",
-      revision: "047ca6de19826ccb60ca24d421060017141ce03e"
+      revision: "731d2dc6f0db23e2f643d18c04b05d02d97f5085"
   version "0.2.3"
   license "GPL-3.0-or-later"
 

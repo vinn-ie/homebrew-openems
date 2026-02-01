@@ -4,10 +4,9 @@
 class Csxcad < Formula
   desc "C++ library for describing geometrical objects and their properties"
   homepage "https://github.com/thliebig/CSXCAD"
-  # Use git HEAD for Python bindings compatibility (v0.6.3 release missing CSPropAbsorbingBC.h)
+  # Pinned to openEMS 0.0.36 submodule commit
   url "https://github.com/thliebig/CSXCAD.git",
-      branch:   "master",
-      revision: "d7d70ef7ea9ab91fcfd3ed2ab1b3a5a0d03b7fbe"
+      revision: "d7d70ef74d864f446652140386be31be531fd22e"
   version "0.6.4"
   license "LGPL-3.0-or-later"
 

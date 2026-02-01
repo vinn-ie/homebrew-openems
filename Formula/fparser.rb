@@ -4,7 +4,7 @@
 class Fparser < Formula
   desc "Function parser library for mathematical expressions in C++"
   homepage "https://github.com/thliebig/fparser"
-  # Using a specific commit for reproducibility since there are no version tags
+  # Pinned to openEMS 0.0.36 submodule commit
   url "https://github.com/thliebig/fparser.git",
       revision: "e625e262620036a52d1dc9abc122d2bf67397e40"
   version "4.5.2.1"
