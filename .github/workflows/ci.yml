@@ -17,6 +17,7 @@ jobs:
   # Test source build (on push/PR)
   # Exact reproduction of user install instructions
   test-source-build:
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -53,5 +54,5 @@ jobs:
           echo "Test patch antenna tutorial (no GUI)"
           curl -LO https://raw.githubusercontent.com/thliebig/openEMS/master/python/Tutorials/Simple_Patch_Antenna.py
           # Run with non-interactive matplotlib backend to avoid hanging on show()
-          timeout 120 MPLBACKEND=Agg python Simple_Patch_Antenna.py
+          MPLBACKEND=Agg python Simple_Patch_Antenna.py
           echo "✅ openEMS installed successfully"
