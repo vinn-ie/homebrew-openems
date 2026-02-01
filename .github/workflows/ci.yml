@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'Formula/**'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches: [main, master]
+
+env:
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+
+jobs:
+  # Test source build (on push/PR)
+  # Exact reproduction of user install instructions
+  test-source-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, macos-15, macos-26]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        run: brew update
+
+      - name: Tap and install openems (full chain)
+        run: |
+          brew tap vinn-ie/openems file://$PWD
+          brew install --build-from-source vinn-ie/openems/openems
+
+      - name: Setup python
+        run: |
+          python3 -m venv openems-env
+          source openems-env/bin/activate
+          pip install --upgrade pip
+          pip install cython numpy matplotlib h5py setuptools
+          CSXCAD_INSTALL_PATH=/opt/homebrew/opt/csxcad pip install git+https://github.com/thliebig/CSXCAD.git#subdirectory=python --no-build-isolation
+          CSXCAD_INSTALL_PATH=/opt/homebrew/opt/csxcad OPENEMS_INSTALL_PATH=/opt/homebrew/opt/openems pip install git+https://github.com/thliebig/openEMS.git#subdirectory=python --no-build-isolation
+
+      - name: Verify installation
+        run: |
+          openEMS --help
+          echo "Test CLI simulation"
+          openEMS examples/test.xml
+          echo "Test Python simulation"
+          source openems-env/bin/activate
+          python examples/test_python.py
+          echo "Test patch antenna tutorial"
+          curl -LO https://raw.githubusercontent.com/thliebig/openEMS/master/python/Tutorials/Simple_Patch_Antenna.py
+          python Simple_Patch_Antenna.py
+          echo "✅ openEMS installed successfully"

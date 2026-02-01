@@ -10,12 +10,6 @@ class Fparser < Formula
   version "4.5.2.1"
   license "LGPL-3.0-or-later"
 
-  bottle do
-    root_url "https://github.com/vinn-ie/homebrew-openems/releases/download/v1.0"
-    rebuild 1
-    sha256 cellar: :any, arm64_sequoia: "a2b7684eb2191afacd8de342206283cd73faa1ea53ed581f3ad7f714c77270c6"
-  end
-
   head "https://github.com/thliebig/fparser.git", branch: "master"
 
   depends_on "cmake" => :build

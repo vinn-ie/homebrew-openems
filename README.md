@@ -1,8 +1,6 @@
 # Homebrew OpenEMS Tap
 
-[Homebrew](https://brew.sh) tap for [openEMS](https://openems.de) on macOS (Apple Silicon).
-
-openEMS is a free electromagnetic field solver using the EC-FDTD method for antenna design, waveguide analysis, and RF simulation.
+[Homebrew](https://brew.sh) tap for [openEMS](https://openems.de) ([github](https://github.com/thliebig/openEMS-Project)) on macOS (Apple Silicon).
 
 ## Installation
 
@@ -12,16 +10,6 @@ brew install openems
 ```
 
 Without GUI: `brew install openems --without-gui`
-
-## Test Installation
-
-```bash
-# Test C++ install
-openEMS examples/test.xml
-
-# Test Python bindings (after installing, see below)
-python examples/test_python.py
-```
 
 ## Python Bindings
 
@@ -34,17 +22,20 @@ CSXCAD_INSTALL_PATH=/opt/homebrew/opt/csxcad pip install git+https://github.com/
 CSXCAD_INSTALL_PATH=/opt/homebrew/opt/csxcad OPENEMS_INSTALL_PATH=/opt/homebrew/opt/openems pip install git+https://github.com/thliebig/openEMS.git#subdirectory=python --no-build-isolation
 ```
 
-## Usage
-
-```bash
-openEMS simulation.xml      # Run simulation
-AppCSXCAD model.xml         # GUI viewer
-```
-
 MATLAB/Octave paths:
 ```matlab
 addpath('/opt/homebrew/share/openEMS/matlab');
 addpath('/opt/homebrew/share/CSXCAD/matlab');
+```
+
+## Test Installation
+
+```bash
+# Test C++ install
+openEMS examples/test.xml
+
+# Test Python bindings
+python examples/test_python.py
 ```
 
 ## Running Tutorials
@@ -57,11 +48,13 @@ curl -LO https://raw.githubusercontent.com/thliebig/openEMS/master/python/Tutori
 python Simple_Patch_Antenna.py
 ```
 
-## Resources
+## Uninstall
 
-- [openEMS Website](https://openems.de)
-- [Tutorials](https://openems.de/index.php/Tutorials)
+To uninstall OpenEMS and its dependencies:
 
-## License
-
-openEMS: GPL-3.0 | CSXCAD: LGPL-3.0 | This tap: MIT
+```bash
+brew uninstall vinn-ie/openems/openems vinn-ie/openems/appcsxcad vinn-ie/openems/qcsxcad vinn-ie/openems/csxcad vinn-ie/openems/fparser
+brew untap vinn-ie/openems
+brew cleanup
+```
+Note: Shared dependencies (qt, vtk, hdf5, etc.) are not removed. To remove them, run: `brew autoremove`

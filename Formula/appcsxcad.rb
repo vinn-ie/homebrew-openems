@@ -10,12 +10,6 @@ class Appcsxcad < Formula
   version "0.2.3"
   license "GPL-3.0-or-later"
 
-  bottle do
-    root_url "https://github.com/vinn-ie/homebrew-openems/releases/download/v1.0"
-    rebuild 1
-    sha256 cellar: :any, arm64_sequoia: "a1ab3a7b88a288322c7bef16e081994e6cbe7eeb0395f5fb1356f622993ba61f"
-  end
-
   head "https://github.com/thliebig/AppCSXCAD.git", branch: "master"
 
   depends_on "cmake" => :build
