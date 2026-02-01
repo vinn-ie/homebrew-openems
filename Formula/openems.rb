@@ -2,13 +2,11 @@
 # frozen_string_literal: true
 
 class Openems < Formula
-  desc "Free and open electromagnetic field solver using EC-FDTD method"
-  homepage "https://openems.de"
   # Use git HEAD for Python bindings compatibility
   url "https://github.com/thliebig/openEMS.git",
       branch:   "master",
       revision: "f99c95d0c96de393b2f6c1d6d7c4dc2ab62ab3b9"
-  version "0.0.37"
+  version "0.0.36"
   license "GPL-3.0-or-later"
 
   head "https://github.com/thliebig/openEMS.git", branch: "master"
