@@ -50,7 +50,8 @@ jobs:
           echo "Test Python simulation"
           source openems-env/bin/activate
           python examples/test_python.py
-          echo "Test patch antenna tutorial"
+          echo "Test patch antenna tutorial (no GUI)"
           curl -LO https://raw.githubusercontent.com/thliebig/openEMS/master/python/Tutorials/Simple_Patch_Antenna.py
-          python Simple_Patch_Antenna.py
+          # Run with non-interactive matplotlib backend to avoid hanging on show()
+          timeout 120 MPLBACKEND=Agg python Simple_Patch_Antenna.py
           echo "✅ openEMS installed successfully"
